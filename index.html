@@ -37,53 +37,63 @@ body::before{
   background-size:100% 100%,100% 100%,44px 44px,44px 44px;
 }
 
-/* ===== NAV ===== */
+/* ===== TOP HEADER ===== */
 nav{
   position:sticky;top:0;z-index:200;
   background:rgba(8,11,16,.97);
   border-bottom:1px solid var(--border);
-  display:flex;align-items:center;
-  min-height:52px;
-  padding:0 12px;
+  display:flex;align-items:center;justify-content:space-between;
+  min-height:48px;
+  padding:0 16px;
 }
 .nav-logo{
-  font-weight:900;font-size:15px;letter-spacing:2px;
+  font-weight:900;font-size:16px;letter-spacing:2px;
   background:linear-gradient(90deg,var(--accent),var(--accent2));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;margin-right:10px;white-space:nowrap;flex-shrink:0;
+  background-clip:text;white-space:nowrap;
 }
-.nav-tabs{
-  display:flex;gap:2px;
-  overflow-x:auto;-webkit-overflow-scrolling:touch;
-  scrollbar-width:none;flex:1;
+.nav-clock{
+  font-size:14px;color:var(--muted);
+  font-variant-numeric:tabular-nums;
 }
-.nav-tabs::-webkit-scrollbar{display:none;}
-/* タブボタン — onclick完全廃止、data-page属性で管理 */
+
+/* ===== BOTTOM TAB BAR ===== */
+.bottom-tabs{
+  position:fixed;bottom:0;left:0;right:0;z-index:300;
+  background:rgba(8,11,16,.98);
+  border-top:1px solid var(--border);
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
 .tab-btn{
-  display:inline-block;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;
+  padding:8px 2px 6px;
   background:none;border:none;
   color:var(--muted);
   font-family:-apple-system,'Hiragino Sans',sans-serif;
-  font-size:12px;font-weight:700;
-  padding:8px 10px;border-radius:6px;
+  font-size:10px;font-weight:700;
   cursor:pointer;white-space:nowrap;
-  /* iOSでbuttonのタッチを確実に受け取る */
   -webkit-appearance:none;appearance:none;
   touch-action:manipulation;
   user-select:none;-webkit-user-select:none;
+  min-height:56px;
+  transition:color .15s;
 }
-.tab-btn.active{color:var(--accent);background:rgba(0,200,255,.1);}
-.nav-clock{
-  margin-left:auto;font-size:13px;color:var(--muted);
-  white-space:nowrap;padding-left:8px;flex-shrink:0;
-  font-variant-numeric:tabular-nums;
+.tab-btn .tab-icon{font-size:22px;line-height:1;}
+.tab-btn .tab-label{font-size:9px;font-weight:700;letter-spacing:0;}
+.tab-btn.active{color:var(--accent);}
+.tab-btn.active .tab-icon{
+  filter:drop-shadow(0 0 6px var(--accent));
 }
 
 /* ===== LAYOUT ===== */
 .main{
   max-width:700px;margin:0 auto;
   padding:16px 14px;position:relative;z-index:1;
-  padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));
+  /* bottom tabs(56px) + safe area + 余白 */
+  padding-bottom:calc(80px + env(safe-area-inset-bottom,0px));
 }
 .page{display:none;}
 .page.active{display:block;animation:fadeUp .25s ease;}
@@ -343,14 +353,6 @@ button,.btn{
 
 <nav>
   <div class="nav-logo">STUDY⚡CMD</div>
-  <div class="nav-tabs" id="navTabs">
-    <button class="tab-btn active" data-page="home">🏠 ホーム</button>
-    <button class="tab-btn" data-page="schedule">📅 TODAY</button>
-    <button class="tab-btn" data-page="ai">🤖 AI演習</button>
-    <button class="tab-btn" data-page="vocab">📚 単語</button>
-    <button class="tab-btn" data-page="math">📐 数学</button>
-    <button class="tab-btn" data-page="log">📝 ログ</button>
-  </div>
   <div class="nav-clock" id="navClock">--:--</div>
 </nav>
 
@@ -405,37 +407,54 @@ button,.btn{
 <div class="page" id="page-ai">
   <div style="margin-bottom:16px;">
     <div style="font-weight:900;font-size:24px;color:var(--accent);">AI 問題演習</div>
-    <div style="font-size:11px;color:var(--muted);margin-top:4px;">AIが出題・採点・解説します</div>
+    <div style="font-size:11px;color:var(--muted);margin-top:4px;">プロンプトを生成 → Claude.aiに貼り付けて演習</div>
   </div>
-  <div class="notice"><b>🤖 使い方：</b>科目を選んで「問題を出す」→ 解答を入力 →「採点する」</div>
+
+  <div class="notice">
+    <b>🤖 使い方：</b>①科目を選ぶ　②「プロンプトを生成」を押す　③コピーボタンでコピー　④下の「Claude.aiで演習する」ボタンを押してClaude.aiに貼り付ける
+  </div>
+
   <div class="card">
-    <div class="card-title"><span class="dot"></span>科目選択</div>
+    <div class="card-title"><span class="dot"></span>科目・モードを選択</div>
     <div class="subj-btns" id="subjBtns">
       <button class="sj-btn sel-eng" data-subj="英語長文読解" data-cls="sel-eng">📖 英語長文</button>
       <button class="sj-btn" data-subj="英検準1級英作文" data-cls="sel-eiken">✍️ 英検ライティング</button>
       <button class="sj-btn" data-subj="数学（数I・数A）" data-cls="sel-math">📐 数学</button>
       <button class="sj-btn" data-subj="国語現代文読解" data-cls="sel-jpn">📜 国語</button>
     </div>
-    <div class="score-row">
-      <span class="sc-lbl">本日の正解：</span>
-      <span class="sc-num" id="qCorrect">0</span>
-      <span class="sc-tot" id="qTotal">/ 0問</span>
+
+    <div style="margin-bottom:10px;">
+      <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">演習モード</div>
+      <div class="subj-btns" id="modeBtns">
+        <button class="sj-btn sel-eng" data-mode="問題を1問出題して">📝 問題を出す</button>
+        <button class="sj-btn" data-mode="間違えやすいポイントを解説して">💡 解説を聞く</button>
+        <button class="sj-btn" data-mode="模擬テスト形式で5問出題して">📋 模擬テスト5問</button>
+      </div>
     </div>
-    <div class="quiz-box">
-      <div class="quiz-meta" id="quizMeta">科目を選択して「問題を出す」を押してください</div>
-      <div class="quiz-q" id="quizQ" style="color:var(--muted);font-weight:400;">ここに問題が表示されます。</div>
-      <textarea class="quiz-ta" id="quizA" placeholder="ここに解答を入力..." rows="4"></textarea>
-      <div id="quizFB"></div>
-    </div>
-    <div class="quiz-btns">
-      <button class="btn-primary" id="btnGen">📝 問題を出す</button>
-      <button class="btn-primary orange" id="btnSub" style="display:none;">✅ 採点する</button>
-      <button class="btn-secondary" id="btnNext" style="display:none;">次の問題 →</button>
-    </div>
+
+    <button class="btn-primary btn-full" id="btnGen">⚡ プロンプトを生成</button>
   </div>
-  <div class="card" id="histCard" style="display:none;">
-    <div class="card-title"><span class="dot" style="background:var(--jpn)"></span>演習履歴</div>
-    <div id="histList"></div>
+
+  <div class="card" id="promptCard" style="display:none;">
+    <div class="card-title"><span class="dot" style="background:var(--gold)"></span>生成されたプロンプト</div>
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;font-size:13px;line-height:1.8;white-space:pre-wrap;color:var(--text);margin-bottom:12px;" id="promptText"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn-primary btn-flex" id="btnCopy">📋 プロンプトをコピー</button>
+      <a id="claudeLink" href="https://claude.ai" target="_blank" style="flex:1;text-decoration:none;">
+        <button class="btn-primary orange btn-full" style="pointer-events:none;">🚀 Claude.aiで演習する</button>
+      </a>
+    </div>
+    <div id="copyMsg" style="text-align:center;font-size:12px;color:var(--accent3);margin-top:8px;display:none;">✅ コピーしました！Claude.aiに貼り付けてください</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="dot" style="background:var(--muted)"></span>演習のヒント</div>
+    <div style="font-size:12px;color:var(--muted);line-height:1.9;">
+      📌 <b style="color:var(--text)">英語長文</b>：「本文の要旨を100字で述べよ」と追加指示すると記述練習になる<br>
+      📌 <b style="color:var(--text)">英検ライティング</b>：採点後「より高得点の答案に添削して」と入力<br>
+      📌 <b style="color:var(--text)">数学</b>：「解き方のヒントだけ教えて、答えは言わないで」と指示すると思考力が鍛えられる<br>
+      📌 <b style="color:var(--text)">国語</b>：解答後「なぜその解釈が正しいか論理的に説明して」と聞く
+    </div>
   </div>
 </div>
 
@@ -514,6 +533,34 @@ button,.btn{
 
 </div><!-- /main -->
 
+<!-- ===== BOTTOM TAB BAR ===== -->
+<div class="bottom-tabs" id="bottomTabs">
+  <button class="tab-btn active" data-page="home">
+    <span class="tab-icon">🏠</span>
+    <span class="tab-label">ホーム</span>
+  </button>
+  <button class="tab-btn" data-page="schedule">
+    <span class="tab-icon">📅</span>
+    <span class="tab-label">TODAY</span>
+  </button>
+  <button class="tab-btn" data-page="ai">
+    <span class="tab-icon">🤖</span>
+    <span class="tab-label">AI演習</span>
+  </button>
+  <button class="tab-btn" data-page="vocab">
+    <span class="tab-icon">📚</span>
+    <span class="tab-label">単語</span>
+  </button>
+  <button class="tab-btn" data-page="math">
+    <span class="tab-icon">📐</span>
+    <span class="tab-label">数学</span>
+  </button>
+  <button class="tab-btn" data-page="log">
+    <span class="tab-icon">📝</span>
+    <span class="tab-label">ログ</span>
+  </button>
+</div>
+
 <script>
 // ========== テスト用アラート（起動確認） ==========
 alert('STUDY COMMAND 起動OK！タップ操作をテスト中...');
@@ -544,7 +591,7 @@ tick();
 setInterval(tick, 30000);
 
 // ========== ナビゲーション ==========
-var tabs = document.querySelectorAll('.tab-btn');
+var tabs = document.querySelectorAll('.bottom-tabs .tab-btn');
 tabs.forEach(function(btn) {
   addTap(btn, function() {
     var pid = btn.getAttribute('data-page');
@@ -761,122 +808,79 @@ function renderMath() {
 }
 renderMath();
 
-// ========== AI QUIZ ==========
+// ========== AI QUIZ — プロンプト生成方式 ==========
 var curSubj = '英語長文読解';
-var qHist = [], qOk = 0, qAll = 0, curQText = '';
+var curMode = '問題を1問出題して';
 
-// 科目選択ボタン
+// 科目ボタン
 document.getElementById('subjBtns').querySelectorAll('.sj-btn').forEach(function(btn) {
   addTap(btn, function() {
     curSubj = btn.getAttribute('data-subj');
     var cls = btn.getAttribute('data-cls');
-    document.querySelectorAll('.sj-btn').forEach(function(b) {
-      b.className = 'sj-btn';
-    });
+    document.querySelectorAll('#subjBtns .sj-btn').forEach(function(b) { b.className = 'sj-btn'; });
     btn.classList.add(cls);
-    document.getElementById('quizMeta').textContent = '選択中: ' + curSubj;
   });
 });
 
-function setLoading(msg) {
-  document.getElementById('quizQ').innerHTML =
-    '<span class="loading-dots"><span></span><span></span><span></span></span>' + msg;
-  var bg = document.getElementById('btnGen');
-  var bs = document.getElementById('btnSub');
-  if (bg) bg.disabled = true;
-  if (bs) bs.disabled = true;
-}
-
-async function callClaude(sys, user) {
-  var res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 1000,
-      system: sys,
-      messages: [{role:'user', content:user}]
-    })
+// モードボタン
+document.getElementById('modeBtns').querySelectorAll('.sj-btn').forEach(function(btn) {
+  addTap(btn, function() {
+    curMode = btn.getAttribute('data-mode');
+    document.querySelectorAll('#modeBtns .sj-btn').forEach(function(b) { b.className = 'sj-btn'; });
+    btn.classList.add('sel-eng');
   });
-  var data = await res.json();
-  if (data.error) throw new Error(data.error.message);
-  return data.content.map(function(c){return c.text||'';}).join('');
-}
-
-async function generateQ() {
-  setLoading(' 問題を生成中…');
-  document.getElementById('quizFB').innerHTML = '';
-  document.getElementById('quizA').value = '';
-  document.getElementById('btnSub').style.display = 'none';
-  document.getElementById('btnNext').style.display = 'none';
-  var sys = 'あなたは優秀な家庭教師です。生徒: 開成中学2年生、英語・国語得意、数学苦手意識あり、英検準1級挑戦中、東大/医学部/IVY志望。科目: ' + curSubj + '。問題文のみ出力。解答・解説は不要。問題は1問のみ。';
-  try {
-    var q = await callClaude(sys, '問題を出してください。');
-    curQText = q;
-    document.getElementById('quizQ').textContent = q;
-    document.getElementById('quizMeta').textContent = '📚 ' + curSubj + ' — 解答を入力して採点する';
-    document.getElementById('btnGen').style.display = 'none';
-    document.getElementById('btnSub').style.display = 'inline-flex';
-    document.getElementById('btnSub').disabled = false;
-    document.getElementById('btnGen').disabled = false;
-  } catch(e) {
-    document.getElementById('quizQ').textContent = '⚠️ エラー: ' + e.message + '\nネット接続を確認してください。';
-    document.getElementById('btnGen').disabled = false;
-    document.getElementById('btnGen').style.display = 'inline-flex';
-  }
-}
-
-async function submitA() {
-  var ans = document.getElementById('quizA').value.trim();
-  if (!ans) { alert('解答を入力してください'); return; }
-  setLoading(' 採点・解説中…');
-  document.getElementById('btnSub').style.display = 'none';
-  var sys = 'あなたは丁寧な採点者・家庭教師です。開成中学2年生の解答を採点してください。\n出力形式:\n【結果】正解 / 部分点 / 不正解\n【解説】丁寧な説明\n【模範解答】模範的な解答\n【次のステップ】改善アドバイス\nすべて日本語で。';
-  try {
-    var fb = await callClaude(sys, '問題: ' + curQText + '\n\n生徒の解答: ' + ans);
-    var isC = fb.indexOf('【結果】正解') >= 0;
-    var isP = fb.indexOf('部分点') >= 0;
-    var cls = isC ? 'fb-ok' : isP ? 'fb-pt' : 'fb-ng';
-    var escaped = fb.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    document.getElementById('quizFB').innerHTML = '<div class="feedback ' + cls + '">' + escaped + '</div>';
-    document.getElementById('quizQ').textContent = curQText;
-    document.getElementById('quizMeta').textContent = '📚 ' + curSubj;
-    qAll++;
-    if (isC) qOk++;
-    document.getElementById('qCorrect').textContent = qOk;
-    document.getElementById('qTotal').textContent = '/ ' + qAll + '問';
-    qHist.unshift({s:curSubj, q:curQText.slice(0,35)+'…', r:isC?'✅':isP?'🟡':'❌'});
-    renderHist();
-    document.getElementById('btnGen').style.display = 'inline-flex';
-    document.getElementById('btnGen').disabled = false;
-    document.getElementById('btnGen').textContent = '📝 次の問題を出す';
-  } catch(e) {
-    document.getElementById('quizFB').innerHTML = '<div class="feedback fb-ng">⚠️ エラー: ' + e.message + '</div>';
-    document.getElementById('btnSub').style.display = 'inline-flex';
-    document.getElementById('btnSub').disabled = false;
-  }
-}
-
-function renderHist() {
-  if (!qHist.length) return;
-  document.getElementById('histCard').style.display = 'block';
-  document.getElementById('histList').innerHTML = qHist.slice(0,8).map(function(h) {
-    return '<div class="hist-item">' +
-      '<span style="font-weight:700;min-width:22px;">' + h.r + '</span>' +
-      '<span style="font-size:10px;color:var(--muted);min-width:70px;white-space:nowrap;">' + h.s + '</span>' +
-      '<span class="hist-q">' + h.q + '</span>' +
-    '</div>';
-  }).join('');
-}
-
-addTap(document.getElementById('btnGen'), function() { generateQ(); });
-addTap(document.getElementById('btnSub'), function() { submitA(); });
-addTap(document.getElementById('btnNext'), function() {
-  document.getElementById('quizFB').innerHTML = '';
-  document.getElementById('quizA').value = '';
-  document.getElementById('btnNext').style.display = 'none';
-  generateQ();
 });
+
+// プロンプトテンプレート
+var PROMPTS = {
+  '英語長文読解': '私は開成中学2年生です。英語は比較的得意で模試偏差値は63程度、英検準1級に挑戦中です。\n\n以下の条件で英語長文読解の問題を{MODE}ください。\n・難易度：英検準1〜2級レベル（高校1〜2年相当）\n・問題形式：150〜200語程度のパッセージ＋設問（内容把握・語彙・記述含む）\n・採点と模範解答、解説もあわせてお願いします。',
+  '英検準1級英作文': '私は開成中学2年生です。英検2級取得済み（CSEスコア：R564 L529 W517 S524）で現在準1級を目指しています。ライティングが最も伸びしろがある部分です。\n\n英検準1級のライティング問題（意見論述 約120〜150語）を{MODE}ください。\n・採点基準（内容・構成・語彙・文法の4観点）に沿って採点してください\n・模範解答と、私の解答へのフィードバックもお願いします。',
+  '数学（数I・数A）': '私は開成中学2年生です。数学は苦手意識があり模試偏差値は58程度です。白チャート数I・数Aを一周しています。将来は東大または国公立医学部を目指しています。\n\n数I・数Aの範囲で{MODE}ください。\n・難易度：教科書〜入試基礎レベル\n・対象単元：二次関数・三角比・確率・整数のいずれか\n・解き方の考え方を丁寧に解説してください\n・苦手克服のためのポイントも教えてください。',
+  '国語現代文読解': '私は開成中学2年生です。国語は比較的得意で模試偏差値は63程度です。毎朝読売新聞を20〜30分読む習慣があります。将来は東大を目指しています。\n\n現代文読解（評論文）の問題を{MODE}ください。\n・難易度：高校入試〜大学入試基礎レベル\n・200〜400字程度の文章＋設問（傍線部説明・内容把握・記述）\n・解説では論理構造の読み方も教えてください。'
+};
+
+addTap(document.getElementById('btnGen'), function() {
+  var tmpl = PROMPTS[curSubj] || PROMPTS['英語長文読解'];
+  var prompt = tmpl.replace('{MODE}', curMode);
+  document.getElementById('promptText').textContent = prompt;
+  document.getElementById('promptCard').style.display = 'block';
+  document.getElementById('copyMsg').style.display = 'none';
+  // スクロール
+  setTimeout(function() {
+    document.getElementById('promptCard').scrollIntoView({behavior:'smooth', block:'start'});
+  }, 100);
+});
+
+addTap(document.getElementById('btnCopy'), function() {
+  var text = document.getElementById('promptText').textContent;
+  // iOS対応のコピー処理
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function() {
+      document.getElementById('copyMsg').style.display = 'block';
+    }).catch(function() { fallbackCopy(text); });
+  } else {
+    fallbackCopy(text);
+  }
+});
+
+function fallbackCopy(text) {
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  ta.style.top = '0';
+  ta.style.left = '0';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  try {
+    document.execCommand('copy');
+    document.getElementById('copyMsg').style.display = 'block';
+  } catch(e) {
+    alert('コピーできませんでした。テキストを長押しして手動でコピーしてください。');
+  }
+  document.body.removeChild(ta);
+}
 
 // ========== ログ ==========
 var SCOL = {'英語':'#00c8ff','数学':'#ff7340','国語':'#6effa0','社会':'#ffd166','英検準1':'#ffd166','模試対策':'#00c8ff','新聞':'#5a6a80'};
