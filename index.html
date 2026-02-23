@@ -407,15 +407,11 @@ button,.btn{
 <div class="page" id="page-ai">
   <div style="margin-bottom:16px;">
     <div style="font-weight:900;font-size:24px;color:var(--accent);">AI 問題演習</div>
-    <div style="font-size:11px;color:var(--muted);margin-top:4px;">プロンプトを生成 → Claude.aiに貼り付けて演習</div>
-  </div>
-
-  <div class="notice">
-    <b>🤖 使い方：</b>①科目を選ぶ　②「プロンプトを生成」を押す　③コピーボタンでコピー　④下の「Claude.aiで演習する」ボタンを押してClaude.aiに貼り付ける
+    <div style="font-size:11px;color:var(--muted);margin-top:4px;">科目を選んでボタン1つ — Claude.aiが自動で開く</div>
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="dot"></span>科目・モードを選択</div>
+    <div class="card-title"><span class="dot"></span>① 科目を選択</div>
     <div class="subj-btns" id="subjBtns">
       <button class="sj-btn sel-eng" data-subj="英語長文読解" data-cls="sel-eng">📖 英語長文</button>
       <button class="sj-btn" data-subj="英検準1級英作文" data-cls="sel-eiken">✍️ 英検ライティング</button>
@@ -423,37 +419,45 @@ button,.btn{
       <button class="sj-btn" data-subj="国語現代文読解" data-cls="sel-jpn">📜 国語</button>
     </div>
 
-    <div style="margin-bottom:10px;">
-      <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">演習モード</div>
-      <div class="subj-btns" id="modeBtns">
-        <button class="sj-btn sel-eng" data-mode="問題を1問出題して">📝 問題を出す</button>
-        <button class="sj-btn" data-mode="間違えやすいポイントを解説して">💡 解説を聞く</button>
-        <button class="sj-btn" data-mode="模擬テスト形式で5問出題して">📋 模擬テスト5問</button>
-      </div>
+    <div class="card-title" style="margin-top:14px;"><span class="dot" style="background:var(--gold)"></span>② 演習モードを選択</div>
+    <div class="subj-btns" id="modeBtns">
+      <button class="sj-btn sel-eng" data-mode="問題を1問出題して">📝 問題を出す</button>
+      <button class="sj-btn" data-mode="間違えやすいポイントを解説して">💡 解説を聞く</button>
+      <button class="sj-btn" data-mode="模擬テスト形式で5問出題して">📋 模擬テスト</button>
     </div>
 
-    <button class="btn-primary btn-full" id="btnGen">⚡ プロンプトを生成</button>
-  </div>
+    <div class="card-title" style="margin-top:14px;"><span class="dot" style="background:var(--accent2)"></span>③ Claude.aiで開始</div>
+    <!-- aタグをボタン全体に使い、iOSのSafariで確実に新規タブが開く -->
+    <a id="claudeLink" href="https://claude.ai/new" target="_blank"
+       style="display:block;text-decoration:none;margin-bottom:10px;"
+       onclick="updateClaudeLink()">
+      <div style="
+        background:linear-gradient(135deg,#00c8ff,#0095cc);
+        color:#000;font-weight:900;font-size:16px;
+        border-radius:12px;padding:16px;
+        text-align:center;letter-spacing:1px;
+        min-height:54px;display:flex;align-items:center;justify-content:center;gap:8px;
+      ">🚀 Claude.aiで今すぐ演習する</div>
+    </a>
 
-  <div class="card" id="promptCard" style="display:none;">
-    <div class="card-title"><span class="dot" style="background:var(--gold)"></span>生成されたプロンプト</div>
-    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;font-size:13px;line-height:1.8;white-space:pre-wrap;color:var(--text);margin-bottom:12px;" id="promptText"></div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;">
-      <button class="btn-primary btn-flex" id="btnCopy">📋 プロンプトをコピー</button>
-      <a id="claudeLink" href="https://claude.ai" target="_blank" style="flex:1;text-decoration:none;">
-        <button class="btn-primary orange btn-full" style="pointer-events:none;">🚀 Claude.aiで演習する</button>
-      </a>
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px;">
+      <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:1px;margin-bottom:6px;">📋 プロンプトのプレビュー（長押しでコピーも可）</div>
+      <!-- user-select:textで長押しコピーを可能にする -->
+      <div id="promptText" style="
+        font-size:12px;line-height:1.8;color:var(--text);
+        white-space:pre-wrap;word-break:break-all;
+        user-select:text;-webkit-user-select:text;
+      ">科目とモードを選ぶと自動生成されます</div>
     </div>
-    <div id="copyMsg" style="text-align:center;font-size:12px;color:var(--accent3);margin-top:8px;display:none;">✅ コピーしました！Claude.aiに貼り付けてください</div>
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="dot" style="background:var(--muted)"></span>演習のヒント</div>
-    <div style="font-size:12px;color:var(--muted);line-height:1.9;">
-      📌 <b style="color:var(--text)">英語長文</b>：「本文の要旨を100字で述べよ」と追加指示すると記述練習になる<br>
-      📌 <b style="color:var(--text)">英検ライティング</b>：採点後「より高得点の答案に添削して」と入力<br>
-      📌 <b style="color:var(--text)">数学</b>：「解き方のヒントだけ教えて、答えは言わないで」と指示すると思考力が鍛えられる<br>
-      📌 <b style="color:var(--text)">国語</b>：解答後「なぜその解釈が正しいか論理的に説明して」と聞く
+    <div class="card-title"><span class="dot" style="background:var(--muted)"></span>Claude.aiで使えるフォローアップ</div>
+    <div style="font-size:12px;color:var(--muted);line-height:2;">
+      📌 <b style="color:var(--text)">英語長文</b>：採点後「要旨を100字の日本語でまとめよ」<br>
+      📌 <b style="color:var(--text)">英検ライティング</b>：「より高得点の答案に添削して」<br>
+      📌 <b style="color:var(--text)">数学</b>：「答えは言わずヒントだけ教えて」<br>
+      📌 <b style="color:var(--text)">国語</b>：「なぜその解釈が正しいか論理的に説明して」
     </div>
   </div>
 </div>
@@ -808,17 +812,50 @@ function renderMath() {
 }
 renderMath();
 
-// ========== AI QUIZ — プロンプト生成方式 ==========
+// ========== AI QUIZ — URL方式（コピー不要） ==========
 var curSubj = '英語長文読解';
 var curMode = '問題を1問出題して';
+
+var PROMPTS = {
+  '英語長文読解':
+    '私は開成中学2年生です。英語は比較的得意で模試偏差値は63程度、英検準1級に挑戦中（2級CSE: R564 L529 W517 S524）、将来は東大・国公立医学部・アイビーリーグを目指しています。\n\n英語長文読解の{MODE}ください。\n条件：\n・難易度は英検準1〜2級レベル（高校1〜2年相当）\n・150〜200語程度のパッセージ＋設問（内容把握・語彙・記述を含む）\n・問題を解いたら採点・模範解答・解説もお願いします。',
+  '英検準1級英作文':
+    '私は開成中学2年生です。英検2級取得済み（CSE: R564 L529 W517 S524）で現在準1級を目指しています。ライティング（517点）が最も伸びしろがある部分です。\n\n英検準1級の意見論述ライティング問題（120〜150語）を{MODE}ください。\n条件：\n・採点は内容・構成・語彙・文法の4観点で行ってください\n・模範解答と私の答案へのフィードバックもお願いします。',
+  '数学（数I・数A）':
+    '私は開成中学2年生です。数学に苦手意識があり模試偏差値は58程度です。白チャート数I・数Aを一周済みです。将来は東大または国公立医学部を目指しています。\n\n数I・数Aの範囲で{MODE}ください。\n条件：\n・難易度は教科書〜入試基礎レベル\n・二次関数・三角比・確率・整数の性質のどれか1単元\n・解き方の考え方を丁寧に解説してください\n・苦手克服のポイントも教えてください。',
+  '国語現代文読解':
+    '私は開成中学2年生です。国語は比較的得意で模試偏差値は63程度です。毎朝読売新聞を20〜30分読む習慣があります。将来は東大を目指しています。\n\n現代文読解（評論文）の{MODE}ください。\n条件：\n・難易度は高校入試〜大学入試基礎レベル\n・200〜400字程度の文章＋設問（傍線部説明・内容把握・記述）\n・解説では文章の論理構造の読み方も教えてください。'
+};
+
+function buildPrompt() {
+  var tmpl = PROMPTS[curSubj] || PROMPTS['英語長文読解'];
+  return tmpl.replace('{MODE}', curMode);
+}
+
+function updateClaudeLink() {
+  // claude.ai/new?q=... にプロンプトをURLエンコードして渡す
+  var prompt = buildPrompt();
+  var encoded = encodeURIComponent(prompt);
+  var link = document.getElementById('claudeLink');
+  if (link) {
+    link.href = 'https://claude.ai/new?q=' + encoded;
+  }
+}
+
+function updatePromptPreview() {
+  var el = document.getElementById('promptText');
+  if (el) el.textContent = buildPrompt();
+  updateClaudeLink();
+}
 
 // 科目ボタン
 document.getElementById('subjBtns').querySelectorAll('.sj-btn').forEach(function(btn) {
   addTap(btn, function() {
     curSubj = btn.getAttribute('data-subj');
-    var cls = btn.getAttribute('data-cls');
+    var cls = btn.getAttribute('data-cls') || 'sel-eng';
     document.querySelectorAll('#subjBtns .sj-btn').forEach(function(b) { b.className = 'sj-btn'; });
     btn.classList.add(cls);
+    updatePromptPreview();
   });
 });
 
@@ -828,59 +865,12 @@ document.getElementById('modeBtns').querySelectorAll('.sj-btn').forEach(function
     curMode = btn.getAttribute('data-mode');
     document.querySelectorAll('#modeBtns .sj-btn').forEach(function(b) { b.className = 'sj-btn'; });
     btn.classList.add('sel-eng');
+    updatePromptPreview();
   });
 });
 
-// プロンプトテンプレート
-var PROMPTS = {
-  '英語長文読解': '私は開成中学2年生です。英語は比較的得意で模試偏差値は63程度、英検準1級に挑戦中です。\n\n以下の条件で英語長文読解の問題を{MODE}ください。\n・難易度：英検準1〜2級レベル（高校1〜2年相当）\n・問題形式：150〜200語程度のパッセージ＋設問（内容把握・語彙・記述含む）\n・採点と模範解答、解説もあわせてお願いします。',
-  '英検準1級英作文': '私は開成中学2年生です。英検2級取得済み（CSEスコア：R564 L529 W517 S524）で現在準1級を目指しています。ライティングが最も伸びしろがある部分です。\n\n英検準1級のライティング問題（意見論述 約120〜150語）を{MODE}ください。\n・採点基準（内容・構成・語彙・文法の4観点）に沿って採点してください\n・模範解答と、私の解答へのフィードバックもお願いします。',
-  '数学（数I・数A）': '私は開成中学2年生です。数学は苦手意識があり模試偏差値は58程度です。白チャート数I・数Aを一周しています。将来は東大または国公立医学部を目指しています。\n\n数I・数Aの範囲で{MODE}ください。\n・難易度：教科書〜入試基礎レベル\n・対象単元：二次関数・三角比・確率・整数のいずれか\n・解き方の考え方を丁寧に解説してください\n・苦手克服のためのポイントも教えてください。',
-  '国語現代文読解': '私は開成中学2年生です。国語は比較的得意で模試偏差値は63程度です。毎朝読売新聞を20〜30分読む習慣があります。将来は東大を目指しています。\n\n現代文読解（評論文）の問題を{MODE}ください。\n・難易度：高校入試〜大学入試基礎レベル\n・200〜400字程度の文章＋設問（傍線部説明・内容把握・記述）\n・解説では論理構造の読み方も教えてください。'
-};
-
-addTap(document.getElementById('btnGen'), function() {
-  var tmpl = PROMPTS[curSubj] || PROMPTS['英語長文読解'];
-  var prompt = tmpl.replace('{MODE}', curMode);
-  document.getElementById('promptText').textContent = prompt;
-  document.getElementById('promptCard').style.display = 'block';
-  document.getElementById('copyMsg').style.display = 'none';
-  // スクロール
-  setTimeout(function() {
-    document.getElementById('promptCard').scrollIntoView({behavior:'smooth', block:'start'});
-  }, 100);
-});
-
-addTap(document.getElementById('btnCopy'), function() {
-  var text = document.getElementById('promptText').textContent;
-  // iOS対応のコピー処理
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text).then(function() {
-      document.getElementById('copyMsg').style.display = 'block';
-    }).catch(function() { fallbackCopy(text); });
-  } else {
-    fallbackCopy(text);
-  }
-});
-
-function fallbackCopy(text) {
-  var ta = document.createElement('textarea');
-  ta.value = text;
-  ta.style.position = 'fixed';
-  ta.style.opacity = '0';
-  ta.style.top = '0';
-  ta.style.left = '0';
-  document.body.appendChild(ta);
-  ta.focus();
-  ta.select();
-  try {
-    document.execCommand('copy');
-    document.getElementById('copyMsg').style.display = 'block';
-  } catch(e) {
-    alert('コピーできませんでした。テキストを長押しして手動でコピーしてください。');
-  }
-  document.body.removeChild(ta);
-}
+// 初期表示
+updatePromptPreview();
 
 // ========== ログ ==========
 var SCOL = {'英語':'#00c8ff','数学':'#ff7340','国語':'#6effa0','社会':'#ffd166','英検準1':'#ffd166','模試対策':'#00c8ff','新聞':'#5a6a80'};
