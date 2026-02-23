@@ -11,21 +11,18 @@
 <title>STUDY COMMAND AI</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:rgba(0,0,0,0);}
-html,body{height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
+html,body{height:100%;-webkit-text-size-adjust:100%;}
 body{
   background:#080b10;color:#dde4ee;
   font-family:-apple-system,'Hiragino Sans','Hiragino Kaku Gothic ProN',sans-serif;
-  min-height:100vh;overflow-x:hidden;
-  -webkit-font-smoothing:antialiased;
+  min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;
   padding-top:env(safe-area-inset-top);
 }
 :root{
   --bg:#080b10;--surface:#0f1318;--surface2:#161b22;--surface3:#1c2230;
   --border:#1e2a3a;--accent:#00c8ff;--accent2:#ff5f2e;--accent3:#6effa0;
   --gold:#ffd166;--text:#dde4ee;--muted:#5a6a80;--danger:#ff3d5a;
-  --math:#ff7340;--eng:#00c8ff;--jpn:#6effa0;--soc:#ffd166;
-  --safe-top:env(safe-area-inset-top,0px);
-  --safe-bottom:env(safe-area-inset-bottom,0px);
+  --math:#ff7340;--eng:#00c8ff;--jpn:#6effa0;
 }
 body::before{
   content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
@@ -36,247 +33,208 @@ body::before{
     linear-gradient(90deg,rgba(0,200,255,.015) 1px,transparent 1px);
   background-size:100% 100%,100% 100%,44px 44px,44px 44px;
 }
-
-/* ===== TOP HEADER ===== */
 nav{
   position:sticky;top:0;z-index:200;
-  background:rgba(8,11,16,.97);
-  border-bottom:1px solid var(--border);
+  background:rgba(8,11,16,.97);border-bottom:1px solid var(--border);
   display:flex;align-items:center;justify-content:space-between;
-  min-height:48px;
-  padding:0 16px;
+  min-height:48px;padding:0 16px;
 }
 .nav-logo{
   font-weight:900;font-size:16px;letter-spacing:2px;
   background:linear-gradient(90deg,var(--accent),var(--accent2));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;white-space:nowrap;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
-.nav-clock{
-  font-size:14px;color:var(--muted);
-  font-variant-numeric:tabular-nums;
+.nav-right{display:flex;align-items:center;gap:10px;}
+.nav-clock{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;}
+.sound-toggle{
+  background:none;border:1px solid var(--border);border-radius:6px;
+  color:var(--muted);font-size:16px;padding:3px 7px;cursor:pointer;
+  -webkit-appearance:none;touch-action:manipulation;
 }
+.sound-toggle.on{border-color:var(--accent);color:var(--accent);}
 
-/* ===== BOTTOM TAB BAR ===== */
+/* ===== BOTTOM TABS ===== */
 .bottom-tabs{
   position:fixed;bottom:0;left:0;right:0;z-index:300;
-  background:rgba(8,11,16,.98);
-  border-top:1px solid var(--border);
-  display:grid;
-  grid-template-columns:repeat(6,1fr);
+  background:rgba(8,11,16,.98);border-top:1px solid var(--border);
+  display:grid;grid-template-columns:repeat(6,1fr);
   padding-bottom:env(safe-area-inset-bottom,0px);
 }
 .tab-btn{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:3px;
-  padding:8px 2px 6px;
-  background:none;border:none;
-  color:var(--muted);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  padding:7px 2px 5px;background:none;border:none;color:var(--muted);
   font-family:-apple-system,'Hiragino Sans',sans-serif;
-  font-size:10px;font-weight:700;
-  cursor:pointer;white-space:nowrap;
-  -webkit-appearance:none;appearance:none;
-  touch-action:manipulation;
-  user-select:none;-webkit-user-select:none;
-  min-height:56px;
-  transition:color .15s;
+  font-size:9px;font-weight:700;cursor:pointer;white-space:nowrap;
+  -webkit-appearance:none;touch-action:manipulation;user-select:none;-webkit-user-select:none;
+  min-height:54px;transition:color .15s;
 }
-.tab-btn .tab-icon{font-size:22px;line-height:1;}
-.tab-btn .tab-label{font-size:9px;font-weight:700;letter-spacing:0;}
+.tab-btn .ti{font-size:20px;line-height:1;}
 .tab-btn.active{color:var(--accent);}
-.tab-btn.active .tab-icon{
-  filter:drop-shadow(0 0 6px var(--accent));
-}
+.tab-btn.active .ti{filter:drop-shadow(0 0 5px var(--accent));}
 
 /* ===== LAYOUT ===== */
 .main{
-  max-width:700px;margin:0 auto;
-  padding:16px 14px;position:relative;z-index:1;
-  /* bottom tabs(56px) + safe area + 余白 */
-  padding-bottom:calc(80px + env(safe-area-inset-bottom,0px));
+  max-width:700px;margin:0 auto;padding:14px 13px;position:relative;z-index:1;
+  padding-bottom:calc(76px + env(safe-area-inset-bottom,0px));
 }
 .page{display:none;}
-.page.active{display:block;animation:fadeUp .25s ease;}
+.page.active{display:block;animation:fadeUp .22s ease;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
-/* ===== CARD ===== */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px;}
-.card-title{
-  font-weight:900;font-size:12px;letter-spacing:2px;text-transform:uppercase;
-  color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:8px;
-}
+/* ===== CARDS ===== */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:15px;margin-bottom:13px;}
+.card-title{font-weight:900;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:11px;display:flex;align-items:center;gap:7px;}
 .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;display:inline-block;}
-
-/* ===== GRID ===== */
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.notice{background:rgba(0,200,255,.05);border:1px solid rgba(0,200,255,.15);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:12px;}
+.notice b{color:var(--accent);}
+.divider{height:1px;background:var(--border);margin:11px 0;}
 
 /* ===== STAT ===== */
-.stat{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;position:relative;overflow:hidden;}
-.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--muted);}
-.stat.c-eng::before{background:var(--eng);}
-.stat.c-math::before{background:var(--math);}
-.stat.c-jpn::before{background:var(--jpn);}
-.stat.c-gold::before{background:var(--gold);}
-.stat .sl{font-size:9px;color:var(--muted);font-weight:700;letter-spacing:1.5px;margin-bottom:4px;text-transform:uppercase;}
-.stat .sv{font-weight:900;font-size:26px;line-height:1.1;letter-spacing:-0.5px;}
-.stat .ss{font-size:9px;color:var(--muted);margin-top:3px;line-height:1.4;}
-.stat.c-eng .sv{color:var(--eng);}
-.stat.c-math .sv{color:var(--math);}
-.stat.c-jpn .sv{color:var(--jpn);}
-.stat.c-gold .sv{color:var(--gold);}
+.stat{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:11px 13px;position:relative;overflow:hidden;}
+.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.stat.ce::before{background:var(--eng);}
+.stat.cm::before{background:var(--math);}
+.stat.cj::before{background:var(--jpn);}
+.stat.cg::before{background:var(--gold);}
+.sl{font-size:9px;color:var(--muted);font-weight:700;letter-spacing:1.5px;margin-bottom:3px;text-transform:uppercase;}
+.sv{font-weight:900;font-size:24px;line-height:1.1;}
+.ss{font-size:9px;color:var(--muted);margin-top:2px;line-height:1.4;}
+.stat.ce .sv{color:var(--eng);}
+.stat.cm .sv{color:var(--math);}
+.stat.cj .sv{color:var(--jpn);}
+.stat.cg .sv{color:var(--gold);}
 
-/* ===== BUTTONS — iOSタッチ対応共通 ===== */
-button,.btn{
-  cursor:pointer;
-  -webkit-appearance:none;appearance:none;
-  touch-action:manipulation;
-  user-select:none;-webkit-user-select:none;
-  font-family:-apple-system,'Hiragino Sans',sans-serif;
-  border:none;outline:none;
-}
-.btn-primary{
-  background:var(--accent);color:#000;
-  border-radius:10px;padding:12px 18px;
-  font-weight:900;font-size:14px;
-  min-height:48px;display:inline-flex;align-items:center;justify-content:center;
-  transition:opacity .15s;
-}
-.btn-primary:active{opacity:.7;}
-.btn-primary.orange{background:var(--accent2);color:#fff;}
-.btn-primary.green{background:var(--accent3);color:#000;}
-.btn-primary.red{background:var(--danger);color:#fff;}
-.btn-secondary{
-  background:var(--surface3);color:var(--muted);
-  border:1px solid var(--border);border-radius:10px;
-  padding:12px 16px;font-weight:700;font-size:13px;
-  min-height:48px;display:inline-flex;align-items:center;justify-content:center;
-  transition:all .15s;
-}
-.btn-secondary:active{border-color:var(--accent);color:var(--accent);}
-.btn-full{width:100%;}
-.btn-flex{flex:1;}
+/* ===== BUTTONS ===== */
+button{cursor:pointer;-webkit-appearance:none;appearance:none;touch-action:manipulation;user-select:none;-webkit-user-select:none;font-family:-apple-system,'Hiragino Sans',sans-serif;border:none;outline:none;}
+.bp{background:var(--accent);color:#000;border-radius:10px;padding:12px 16px;font-weight:900;font-size:14px;min-height:48px;display:inline-flex;align-items:center;justify-content:center;transition:opacity .15s;}
+.bp:active{opacity:.7;}
+.bp:disabled{opacity:.4;}
+.bp.or{background:var(--accent2);color:#fff;}
+.bp.gr{background:var(--accent3);color:#000;}
+.bp.rd{background:var(--danger);color:#fff;}
+.bs{background:var(--surface3);color:var(--muted);border:1px solid var(--border);border-radius:10px;padding:11px 14px;font-weight:700;font-size:13px;min-height:48px;display:inline-flex;align-items:center;justify-content:center;transition:all .15s;}
+.bs:active{border-color:var(--accent);color:var(--accent);}
+.bfull{width:100%;}
+.bflex{flex:1;}
 
 /* ===== SCHEDULE ===== */
-.si{
-  display:flex;align-items:center;gap:9px;
-  padding:11px 13px;border-radius:9px;
-  border:1px solid var(--border);background:var(--surface2);
-  margin-bottom:7px;
-  touch-action:manipulation;
-  user-select:none;-webkit-user-select:none;
-  cursor:pointer;
-}
+.si{display:flex;align-items:center;gap:9px;padding:11px 12px;border-radius:9px;border:1px solid var(--border);background:var(--surface2);margin-bottom:6px;touch-action:manipulation;user-select:none;-webkit-user-select:none;cursor:pointer;}
 .si:active{opacity:.7;}
-.si.done{opacity:.38;}
-.si.done .si-title{text-decoration:line-through;}
-.si-time{font-size:10px;color:var(--muted);min-width:40px;}
-.si-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
-.si-title{font-size:13px;font-weight:700;flex:1;line-height:1.3;}
+.si.done{opacity:.35;}
+.si.done .si-n{text-decoration:line-through;}
+.si-t{font-size:10px;color:var(--muted);min-width:38px;}
+.si-d{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.si-n{font-size:13px;font-weight:700;flex:1;line-height:1.3;}
 .si-dur{font-size:10px;color:var(--muted);white-space:nowrap;}
-.si-chk{
-  width:24px;height:24px;border-radius:6px;
-  border:1.5px solid var(--muted);background:transparent;
-  display:flex;align-items:center;justify-content:center;
-  font-size:14px;flex-shrink:0;color:transparent;
-  pointer-events:none;/* 親のタッチで処理 */
-}
+.si-chk{width:22px;height:22px;border-radius:5px;border:1.5px solid var(--muted);display:flex;align-items:center;justify-content:center;font-size:13px;color:transparent;flex-shrink:0;pointer-events:none;}
 .si.done .si-chk{background:var(--accent3);border-color:var(--accent3);color:#000;}
 
 /* ===== WEEK GRID ===== */
-.wgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.wgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
 .wdc{display:flex;flex-direction:column;gap:3px;}
-.wdl{font-size:8px;color:var(--muted);text-align:center;letter-spacing:.3px;margin-bottom:3px;padding-bottom:3px;border-bottom:1px solid var(--border);text-transform:uppercase;}
+.wdl{font-size:7px;color:var(--muted);text-align:center;margin-bottom:3px;padding-bottom:3px;border-bottom:1px solid var(--border);text-transform:uppercase;}
 .wdl.today{color:var(--accent);}
-.wb{border-radius:3px;padding:3px 1px;font-size:7px;text-align:center;font-weight:700;line-height:1.4;}
+.wb{border-radius:3px;padding:2px 1px;font-size:7px;text-align:center;font-weight:700;line-height:1.4;}
 .wb.club{background:rgba(255,95,46,.18);color:var(--accent2);border:1px solid rgba(255,95,46,.3);}
-.wb.eng{background:rgba(0,200,255,.12);color:var(--eng);border:1px solid rgba(0,200,255,.22);}
+.wb.eng{background:rgba(0,200,255,.12);color:var(--eng);border:1px solid rgba(0,200,255,.2);}
 .wb.math{background:rgba(255,115,64,.1);color:var(--math);border:1px solid rgba(255,115,64,.2);}
 .wb.eiken{background:rgba(255,209,102,.1);color:var(--gold);border:1px solid rgba(255,209,102,.2);}
 .wb.jpn{background:rgba(110,255,160,.08);color:var(--jpn);border:1px solid rgba(110,255,160,.18);}
 .wb.news{background:rgba(90,106,128,.12);color:var(--muted);border:1px solid rgba(90,106,128,.2);}
 
 /* ===== AI QUIZ ===== */
-.subj-btns{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px;}
-.sj-btn{
-  padding:9px 14px;border-radius:8px;
-  border:1px solid var(--border);background:var(--surface2);
-  color:var(--muted);font-weight:700;font-size:12px;
-  -webkit-appearance:none;appearance:none;
-  touch-action:manipulation;user-select:none;-webkit-user-select:none;
-  cursor:pointer;min-height:44px;
-}
-.sj-btn:active{opacity:.7;}
-.sj-btn.sel-eng{background:rgba(0,200,255,.12);border-color:var(--eng);color:var(--eng);}
-.sj-btn.sel-math{background:rgba(255,115,64,.12);border-color:var(--math);color:var(--math);}
-.sj-btn.sel-eiken{background:rgba(255,209,102,.12);border-color:var(--gold);color:var(--gold);}
-.sj-btn.sel-jpn{background:rgba(110,255,160,.12);border-color:var(--jpn);color:var(--jpn);}
+.sj-btns{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.sjb{padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-weight:700;font-size:12px;-webkit-appearance:none;touch-action:manipulation;user-select:none;-webkit-user-select:none;cursor:pointer;min-height:42px;}
+.sjb:active{opacity:.7;}
+.sjb.se{background:rgba(0,200,255,.12);border-color:var(--eng);color:var(--eng);}
+.sjb.sm{background:rgba(255,115,64,.12);border-color:var(--math);color:var(--math);}
+.sjb.sk{background:rgba(255,209,102,.12);border-color:var(--gold);color:var(--gold);}
+.sjb.sj{background:rgba(110,255,160,.12);border-color:var(--jpn);color:var(--jpn);}
 
-.quiz-box{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px;min-height:160px;}
-.quiz-meta{font-size:10px;color:var(--muted);margin-bottom:8px;}
-.quiz-q{font-size:14px;font-weight:700;line-height:1.8;margin-bottom:12px;white-space:pre-wrap;}
-.quiz-ta{
-  width:100%;min-height:80px;
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:8px;color:var(--text);
-  padding:12px;font-size:16px;/* 16px以上でSafariのズームを防ぐ */
-  font-family:-apple-system,'Hiragino Sans',sans-serif;
-  resize:none;outline:none;line-height:1.6;
-  -webkit-appearance:none;appearance:none;
+/* Worker URL 入力欄 */
+.worker-setup{background:rgba(255,209,102,.05);border:1px solid rgba(255,209,102,.2);border-radius:10px;padding:12px;margin-bottom:12px;}
+.worker-setup p{font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:8px;}
+.worker-url-row{display:flex;gap:7px;}
+.worker-url-row input{
+  flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;
+  color:var(--text);padding:10px 12px;font-size:14px;outline:none;
+  -webkit-appearance:none;min-height:44px;
 }
-.quiz-ta:focus{border-color:var(--accent);}
-.quiz-btns{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
-.score-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.worker-url-row input:focus{border-color:var(--gold);}
+.worker-ok{background:var(--gold);color:#000;border-radius:8px;padding:10px 14px;font-weight:700;font-size:13px;min-height:44px;white-space:nowrap;-webkit-appearance:none;touch-action:manipulation;cursor:pointer;border:none;}
+
+/* チャット UI */
+.chat-area{
+  background:var(--surface2);border:1px solid var(--border);border-radius:12px;
+  padding:12px;min-height:200px;max-height:55vh;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  display:flex;flex-direction:column;gap:10px;
+  margin-bottom:10px;
+}
+.msg{display:flex;gap:8px;align-items:flex-start;}
+.msg.ai{flex-direction:row;}
+.msg.user{flex-direction:row-reverse;}
+.msg-bubble{
+  max-width:85%;padding:10px 13px;border-radius:12px;
+  font-size:13px;line-height:1.75;white-space:pre-wrap;word-break:break-word;
+}
+.msg.ai .msg-bubble{background:var(--surface3);color:var(--text);border:1px solid var(--border);}
+.msg.user .msg-bubble{background:rgba(0,200,255,.15);color:var(--text);border:1px solid rgba(0,200,255,.25);}
+.msg-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;margin-top:2px;}
+.msg.ai .msg-icon{background:rgba(0,200,255,.1);}
+.msg.user .msg-icon{background:rgba(255,95,46,.1);}
+.msg-bubble.ok-bubble{background:rgba(110,255,160,.08);border-color:rgba(110,255,160,.3);color:#a8f0c0;}
+.msg-bubble.ng-bubble{background:rgba(255,61,90,.08);border-color:rgba(255,61,90,.3);color:#ff8fa3;}
+.msg-bubble.pt-bubble{background:rgba(255,209,102,.08);border-color:rgba(255,209,102,.3);color:#f5d98a;}
+
+.chat-input-row{display:flex;gap:8px;}
+.chat-ta{
+  flex:1;background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;color:var(--text);padding:11px 13px;
+  font-size:16px;font-family:-apple-system,'Hiragino Sans',sans-serif;
+  resize:none;outline:none;line-height:1.5;-webkit-appearance:none;
+  min-height:48px;max-height:120px;
+}
+.chat-ta:focus{border-color:var(--accent);}
+
+.score-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
 .sc-lbl{font-size:11px;color:var(--muted);}
 .sc-num{font-weight:900;font-size:22px;color:var(--accent3);}
 .sc-tot{font-size:11px;color:var(--muted);}
-.feedback{margin-top:12px;padding:14px;border-radius:10px;font-size:13px;line-height:1.8;white-space:pre-wrap;border:1px solid;}
-.fb-ok{background:rgba(110,255,160,.07);border-color:rgba(110,255,160,.3);color:#a8f0c0;}
-.fb-pt{background:rgba(255,209,102,.07);border-color:rgba(255,209,102,.3);color:#f5d98a;}
-.fb-ng{background:rgba(255,61,90,.07);border-color:rgba(255,61,90,.3);color:#ff8fa3;}
-.loading-dots{display:inline-flex;gap:5px;align-items:center;margin-right:6px;}
-.loading-dots span{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:ld .8s ease infinite;}
-.loading-dots span:nth-child(2){animation-delay:.15s;}
-.loading-dots span:nth-child(3){animation-delay:.3s;}
-@keyframes ld{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
-.hist-item{display:flex;align-items:center;gap:9px;padding:7px 12px;background:var(--surface);border-radius:6px;border:1px solid var(--border);margin-bottom:5px;font-size:11px;}
-.hist-q{flex:1;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+.ld{display:inline-flex;gap:4px;align-items:center;}
+.ld span{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:ldot .8s ease infinite;}
+.ld span:nth-child(2){animation-delay:.15s;}
+.ld span:nth-child(3){animation-delay:.3s;}
+@keyframes ldot{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}
 
 /* ===== VOCAB ===== */
 .vc{
-  background:var(--surface2);border:1px solid var(--border);
-  border-radius:12px;padding:24px 16px;
-  text-align:center;min-height:140px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
-  margin-bottom:12px;position:relative;
+  background:var(--surface2);border:1px solid var(--border);border-radius:12px;
+  padding:22px 14px;text-align:center;min-height:136px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;
+  margin-bottom:11px;position:relative;cursor:pointer;
   touch-action:manipulation;user-select:none;-webkit-user-select:none;
-  cursor:pointer;
 }
-.vc:active{border-color:var(--gold);opacity:.85;}
-.vc::after{content:'タップで意味を表示';position:absolute;bottom:8px;right:12px;font-size:9px;color:var(--muted);}
+.vc:active{opacity:.85;}
+.vc::after{content:'タップで意味を表示';position:absolute;bottom:7px;right:11px;font-size:9px;color:var(--muted);}
 .vc.flipped::after{content:'タップで単語に戻す';}
-.vw{font-weight:900;font-size:36px;color:var(--gold);line-height:1;}
+.vw{font-weight:900;font-size:34px;color:var(--gold);line-height:1;}
 .vr{font-size:11px;color:var(--muted);}
-.vm{font-size:18px;font-weight:700;display:none;color:var(--text);}
-.ve{font-size:12px;color:var(--muted);display:none;line-height:1.7;margin-top:4px;}
+.vm{font-size:17px;font-weight:700;display:none;color:var(--text);}
+.ve{font-size:12px;color:var(--muted);display:none;line-height:1.7;margin-top:3px;}
 .vc.flipped .vw,.vc.flipped .vr{display:none;}
 .vc.flipped .vm,.vc.flipped .ve{display:block;}
-.vc-btns{display:flex;gap:8px;margin-bottom:12px;}
-.vp-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.vc-btns{display:flex;gap:7px;margin-bottom:10px;}
+.vp-row{display:flex;align-items:center;gap:9px;margin-bottom:11px;}
 .vp-bar{flex:1;height:5px;background:var(--border);border-radius:999px;overflow:hidden;}
 .vp-fill{height:100%;background:var(--gold);border-radius:999px;transition:width .4s ease;}
 .vp-cnt{font-size:11px;color:var(--muted);white-space:nowrap;}
-.vsc{text-align:center;font-size:11px;color:var(--muted);margin-bottom:10px;}
-.divider{height:1px;background:var(--border);margin:12px 0;}
+.vsc{text-align:center;font-size:11px;color:var(--muted);margin-bottom:9px;}
 
 /* ===== MATH ===== */
-.mt{
-  display:flex;align-items:center;gap:10px;
-  padding:12px 13px;border-radius:9px;
-  border:1px solid var(--border);background:var(--surface2);
-  margin-bottom:6px;
-  touch-action:manipulation;user-select:none;-webkit-user-select:none;
-  cursor:pointer;
-}
+.mt{display:flex;align-items:center;gap:9px;padding:11px 12px;border-radius:9px;border:1px solid var(--border);background:var(--surface2);margin-bottom:5px;touch-action:manipulation;user-select:none;-webkit-user-select:none;cursor:pointer;}
 .mt:active{opacity:.7;}
 .mt.ok{border-color:var(--accent3);background:rgba(110,255,160,.05);}
 .mt.ng{border-color:var(--danger);background:rgba(255,61,90,.05);}
@@ -284,64 +242,49 @@ button,.btn{
 .mt.ok .mt-dot{background:var(--accent3);border-color:var(--accent3);}
 .mt.ng .mt-dot{background:var(--danger);border-color:var(--danger);}
 .mt-lbl{font-size:13px;font-weight:700;flex:1;line-height:1.3;}
-.mt-sec{font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.5px;}
-.sec-head{font-size:10px;color:var(--math);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin:12px 0 6px 2px;}
+.mt-sec{font-size:9px;color:var(--muted);font-weight:700;}
+.sec-head{font-size:10px;color:var(--math);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin:11px 0 5px 2px;}
 
 /* ===== CSE ===== */
-.cse{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px;}
-.cse-lbl{font-size:9px;color:var(--muted);font-weight:700;letter-spacing:1.5px;margin-bottom:4px;text-transform:uppercase;}
-.cse-s{font-weight:900;font-size:24px;line-height:1.1;}
+.cse{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:11px;}
+.cse-lbl{font-size:9px;color:var(--muted);font-weight:700;letter-spacing:1.5px;margin-bottom:3px;text-transform:uppercase;}
+.cse-s{font-weight:900;font-size:22px;line-height:1.1;}
 .cse-t{font-size:9px;color:var(--muted);margin-top:2px;}
-.cse-bar{margin-top:7px;height:3px;background:var(--border);border-radius:999px;overflow:hidden;}
+.cse-bar{margin-top:6px;height:3px;background:var(--border);border-radius:999px;overflow:hidden;}
 .cse-f{height:100%;border-radius:999px;}
 
 /* ===== LOG ===== */
-.lf{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px;}
-.lf select,.lf input{
-  background:var(--surface2);border:1px solid var(--border);
-  border-radius:8px;color:var(--text);
-  padding:10px 12px;
-  font-family:-apple-system,'Hiragino Sans',sans-serif;
-  font-size:16px;/* ズーム防止 */
-  outline:none;-webkit-appearance:none;appearance:none;
-  min-height:48px;
-}
-.lf select{
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%235a6a80'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 10px center;
-  padding-right:28px;
-}
-.lf input[type=number]{max-width:74px;}
-.lf input[type=text]{flex:1;min-width:120px;}
-.le{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--surface2);border-radius:6px;border:1px solid var(--border);margin-bottom:5px;font-size:12px;}
-.le-s{font-weight:700;min-width:44px;}
-.le-d{font-size:11px;color:var(--muted);min-width:38px;}
+.lf{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px;}
+.lf select,.lf input{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:10px 11px;font-family:-apple-system,'Hiragino Sans',sans-serif;font-size:16px;outline:none;-webkit-appearance:none;appearance:none;min-height:46px;}
+.lf select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%235a6a80'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;padding-right:26px;}
+.lf input[type=number]{max-width:70px;}
+.lf input[type=text]{flex:1;min-width:100px;}
+.le{display:flex;align-items:center;gap:7px;padding:7px 11px;background:var(--surface2);border-radius:6px;border:1px solid var(--border);margin-bottom:4px;font-size:12px;}
+.le-s{font-weight:700;min-width:42px;}
+.le-d{font-size:11px;color:var(--muted);min-width:34px;}
 .le-n{flex:1;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .le-t{font-size:10px;color:var(--border);white-space:nowrap;}
-.log-list{display:flex;flex-direction:column;max-height:240px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
-.log-sum{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;}
-.log-sum span{font-size:11px;}
+.log-list{display:flex;flex-direction:column;max-height:230px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.log-sum{display:flex;gap:11px;flex-wrap:wrap;margin-top:9px;}
 
 /* ===== HOME ===== */
-.hero{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:14px;position:relative;overflow:hidden;}
-.hero::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(0,200,255,.07),transparent 70%);pointer-events:none;}
-.hero-name{font-weight:900;font-size:30px;letter-spacing:1px;line-height:1;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:13px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(0,200,255,.07),transparent 70%);pointer-events:none;}
+.hero-name{font-weight:900;font-size:28px;letter-spacing:1px;line-height:1;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .hero-sub{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.5;}
 .hero-sub span{color:var(--accent);}
-.badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
-.badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:10px;font-weight:700;border:1px solid;}
+.badges{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px;}
+.badge{display:inline-block;padding:3px 9px;border-radius:999px;font-size:10px;font-weight:700;border:1px solid;}
 .badge.b1{border-color:var(--eng);color:var(--eng);}
 .badge.b2{border-color:var(--accent2);color:var(--accent2);}
 .badge.b3{border-color:var(--gold);color:var(--gold);}
 .badge.b4{border-color:var(--jpn);color:var(--jpn);}
-.rings{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;padding:4px 0;}
-.ri{display:flex;flex-direction:column;align-items:center;gap:4px;}
-.ri-val{font-weight:900;font-size:16px;margin-top:-48px;margin-bottom:20px;text-align:center;}
-.ri-lbl{font-size:9px;color:var(--muted);text-align:center;text-transform:uppercase;letter-spacing:.5px;}
+.rings{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;padding:4px 0;}
+.ri{display:flex;flex-direction:column;align-items:center;gap:3px;}
+.ri-val{font-weight:900;font-size:15px;margin-top:-46px;margin-bottom:20px;text-align:center;}
+.ri-lbl{font-size:9px;color:var(--muted);text-align:center;text-transform:uppercase;letter-spacing:.4px;}
 .ring-svg{transform:rotate(-90deg);}
-.notice{background:rgba(0,200,255,.05);border:1px solid rgba(0,200,255,.15);border-radius:8px;padding:10px 13px;font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:12px;}
-.notice b{color:var(--accent);}
-.weekly{display:flex;gap:12px;flex-wrap:wrap;}
+.weekly{display:flex;gap:11px;flex-wrap:wrap;}
 .weekly span{font-size:12px;}
 
 ::-webkit-scrollbar{width:3px;}
@@ -353,28 +296,29 @@ button,.btn{
 
 <nav>
   <div class="nav-logo">STUDY⚡CMD</div>
-  <div class="nav-clock" id="navClock">--:--</div>
+  <div class="nav-right">
+    <button class="sound-toggle on" id="soundToggle" title="効果音ON/OFF">🔔</button>
+    <div class="nav-clock" id="navClock">--:--</div>
+  </div>
 </nav>
 
 <div class="main">
 
-<!-- HOME -->
+<!-- ===== HOME ===== -->
 <div class="page active" id="page-home">
   <div class="hero">
     <div class="hero-name">STUDY COMMAND</div>
     <div class="hero-sub">開成中学 <span>2年生</span> ／ バスケ部主将 ／ 毎朝読売新聞</div>
     <div class="badges">
-      <span class="badge b1">東大</span>
-      <span class="badge b2">国公立医学部</span>
-      <span class="badge b3">IVY LEAGUE</span>
-      <span class="badge b4">Toronto '25夏</span>
+      <span class="badge b1">東大</span><span class="badge b2">国公立医学部</span>
+      <span class="badge b3">IVY LEAGUE</span><span class="badge b4">Toronto '25夏</span>
     </div>
   </div>
-  <div class="g2" style="margin-bottom:14px;">
-    <div class="stat c-eng"><div class="sl">英語偏差値</div><div class="sv">63</div><div class="ss">東進 中学学力判定</div></div>
-    <div class="stat c-math"><div class="sl">数学偏差値</div><div class="sv">58</div><div class="ss">▲ 目標65+ 要強化</div></div>
-    <div class="stat c-jpn"><div class="sl">国語偏差値</div><div class="sv">63</div><div class="ss">新聞習慣が貢献</div></div>
-    <div class="stat c-gold"><div class="sl">英検</div><div class="sv" style="font-size:18px;">準1挑戦中</div><div class="ss">2級取得 CSE2134</div></div>
+  <div class="g2" style="margin-bottom:13px;">
+    <div class="stat ce"><div class="sl">英語偏差値</div><div class="sv">63</div><div class="ss">東進 中学学力判定</div></div>
+    <div class="stat cm"><div class="sl">数学偏差値</div><div class="sv">58</div><div class="ss">▲ 目標65+</div></div>
+    <div class="stat cj"><div class="sl">国語偏差値</div><div class="sv">63</div><div class="ss">新聞習慣が貢献</div></div>
+    <div class="stat cg"><div class="sl">英検</div><div class="sv" style="font-size:17px;">準1挑戦中</div><div class="ss">2級 CSE2134</div></div>
   </div>
   <div class="card">
     <div class="card-title"><span class="dot"></span>目標と現在地</div>
@@ -386,87 +330,88 @@ button,.btn{
   </div>
 </div>
 
-<!-- TODAY -->
+<!-- ===== TODAY ===== -->
 <div class="page" id="page-schedule">
-  <div style="margin-bottom:16px;">
-    <div style="font-weight:900;font-size:24px;color:var(--eng);">TODAY'S PLAN</div>
-    <div style="font-size:11px;color:var(--muted);margin-top:4px;" id="schedDate">—</div>
+  <div style="margin-bottom:14px;">
+    <div style="font-weight:900;font-size:23px;color:var(--eng);">TODAY'S PLAN</div>
+    <div style="font-size:11px;color:var(--muted);margin-top:3px;" id="schedDate">—</div>
   </div>
   <div class="card">
     <div id="schedList"></div>
-    <div style="font-size:10px;color:var(--muted);margin-top:8px;">タップで完了チェック</div>
+    <div style="font-size:10px;color:var(--muted);margin-top:7px;">✅ タップで完了チェック（チェック音あり）</div>
   </div>
   <div class="card">
     <div class="card-title"><span class="dot" style="background:var(--accent2)"></span>週間スケジュール</div>
     <div class="wgrid" id="weekGrid"></div>
-    <div style="margin-top:8px;font-size:10px;color:var(--muted);">TODAY=<span style="color:var(--accent)">水色</span>　部活=橙　塾=水色</div>
   </div>
 </div>
 
-<!-- AI QUIZ -->
+<!-- ===== AI QUIZ ===== -->
 <div class="page" id="page-ai">
-  <div style="margin-bottom:16px;">
-    <div style="font-weight:900;font-size:24px;color:var(--accent);">AI 問題演習</div>
-    <div style="font-size:11px;color:var(--muted);margin-top:4px;">科目を選んでボタン1つ — Claude.aiが自動で開く</div>
+  <div style="margin-bottom:14px;">
+    <div style="font-weight:900;font-size:23px;color:var(--accent);">AI 問題演習</div>
+    <div style="font-size:11px;color:var(--muted);margin-top:3px;">アプリ内でAIと1対1演習</div>
+  </div>
+
+  <!-- Worker URL 設定 -->
+  <div class="worker-setup" id="workerSetup">
+    <p>⚙️ <b style="color:var(--gold)">初回設定（1回だけ）</b><br>
+    Cloudflare WorkerのURLを入力してください。<br>
+    設定方法は付属の <b>worker.js</b> ファイルを参照。</p>
+    <div class="worker-url-row">
+      <input type="url" id="workerUrl" placeholder="https://xxxx.workers.dev" autocorrect="off" autocapitalize="off">
+      <button class="worker-ok" id="btnSaveWorker">保存</button>
+    </div>
+    <div style="font-size:10px;color:var(--muted);margin-top:6px;" id="workerStatus"></div>
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="dot"></span>① 科目を選択</div>
-    <div class="subj-btns" id="subjBtns">
-      <button class="sj-btn sel-eng" data-subj="英語長文読解" data-cls="sel-eng">📖 英語長文</button>
-      <button class="sj-btn" data-subj="英検準1級英作文" data-cls="sel-eiken">✍️ 英検ライティング</button>
-      <button class="sj-btn" data-subj="数学（数I・数A）" data-cls="sel-math">📐 数学</button>
-      <button class="sj-btn" data-subj="国語現代文読解" data-cls="sel-jpn">📜 国語</button>
+    <div class="card-title"><span class="dot"></span>① 科目</div>
+    <div class="sj-btns" id="subjBtns">
+      <button class="sjb se" data-subj="英語長文読解" data-cls="se">📖 英語長文</button>
+      <button class="sjb" data-subj="英検準1級英作文" data-cls="sk">✍️ 英検ライティング</button>
+      <button class="sjb" data-subj="数学（数I・数A）" data-cls="sm">📐 数学</button>
+      <button class="sjb" data-subj="国語現代文読解" data-cls="sj">📜 国語</button>
     </div>
-
-    <div class="card-title" style="margin-top:14px;"><span class="dot" style="background:var(--gold)"></span>② 演習モードを選択</div>
-    <div class="subj-btns" id="modeBtns">
-      <button class="sj-btn sel-eng" data-mode="問題を1問出題して">📝 問題を出す</button>
-      <button class="sj-btn" data-mode="間違えやすいポイントを解説して">💡 解説を聞く</button>
-      <button class="sj-btn" data-mode="模擬テスト形式で5問出題して">📋 模擬テスト</button>
+    <div class="card-title"><span class="dot" style="background:var(--gold)"></span>② モード</div>
+    <div class="sj-btns" id="modeBtns">
+      <button class="sjb se" data-mode="q">📝 問題を出す</button>
+      <button class="sjb" data-mode="e">💡 解説を聞く</button>
+      <button class="sjb" data-mode="r">🔁 復習テスト</button>
     </div>
-
-    <div class="card-title" style="margin-top:14px;"><span class="dot" style="background:var(--accent2)"></span>③ Claude.aiで開始</div>
-    <!-- aタグをボタン全体に使い、iOSのSafariで確実に新規タブが開く -->
-    <a id="claudeLink" href="https://claude.ai/new" target="_blank"
-       style="display:block;text-decoration:none;margin-bottom:10px;"
-       onclick="updateClaudeLink()">
-      <div style="
-        background:linear-gradient(135deg,#00c8ff,#0095cc);
-        color:#000;font-weight:900;font-size:16px;
-        border-radius:12px;padding:16px;
-        text-align:center;letter-spacing:1px;
-        min-height:54px;display:flex;align-items:center;justify-content:center;gap:8px;
-      ">🚀 Claude.aiで今すぐ演習する</div>
-    </a>
-
-    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px;">
-      <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:1px;margin-bottom:6px;">📋 プロンプトのプレビュー（長押しでコピーも可）</div>
-      <!-- user-select:textで長押しコピーを可能にする -->
-      <div id="promptText" style="
-        font-size:12px;line-height:1.8;color:var(--text);
-        white-space:pre-wrap;word-break:break-all;
-        user-select:text;-webkit-user-select:text;
-      ">科目とモードを選ぶと自動生成されます</div>
-    </div>
+    <button class="bp bfull" id="btnNewQ" style="margin-bottom:0;">⚡ 新しい問題を出す</button>
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="dot" style="background:var(--muted)"></span>Claude.aiで使えるフォローアップ</div>
-    <div style="font-size:12px;color:var(--muted);line-height:2;">
-      📌 <b style="color:var(--text)">英語長文</b>：採点後「要旨を100字の日本語でまとめよ」<br>
-      📌 <b style="color:var(--text)">英検ライティング</b>：「より高得点の答案に添削して」<br>
-      📌 <b style="color:var(--text)">数学</b>：「答えは言わずヒントだけ教えて」<br>
-      📌 <b style="color:var(--text)">国語</b>：「なぜその解釈が正しいか論理的に説明して」
+    <div class="score-row">
+      <span class="sc-lbl">本日の正解：</span>
+      <span class="sc-num" id="qOk">0</span>
+      <span class="sc-tot" id="qTot">/ 0問</span>
+    </div>
+    <!-- チャット表示エリア -->
+    <div class="chat-area" id="chatArea">
+      <div class="msg ai">
+        <div class="msg-icon">🤖</div>
+        <div class="msg-bubble">科目とモードを選んで「新しい問題を出す」を押してください。<br>アプリ内でAIと直接やり取りできます！</div>
+      </div>
+    </div>
+    <!-- 解答入力 -->
+    <div class="chat-input-row">
+      <textarea class="chat-ta" id="chatInput" placeholder="解答を入力..." rows="2"></textarea>
+      <button class="bp" id="btnSend" style="padding:11px 14px;align-self:flex-end;">送信</button>
+    </div>
+    <div style="display:flex;gap:7px;margin-top:8px;">
+      <button class="bs bflex" id="btnHint">💡 ヒント</button>
+      <button class="bs bflex" id="btnClear">🗑 クリア</button>
     </div>
   </div>
 </div>
 
-<!-- VOCAB -->
+<!-- ===== VOCAB ===== -->
 <div class="page" id="page-vocab">
-  <div style="margin-bottom:16px;">
-    <div style="font-weight:900;font-size:24px;color:var(--gold);">英検準1級 単語ドリル</div>
-    <div style="font-size:11px;color:var(--muted);margin-top:4px;">毎日10語が目標 — タップで意味を確認</div>
+  <div style="margin-bottom:14px;">
+    <div style="font-weight:900;font-size:23px;color:var(--gold);">英検準1級 単語ドリル</div>
+    <div style="font-size:11px;color:var(--muted);margin-top:3px;">毎日10語が目標 — 覚えた・わからないで仕分け</div>
   </div>
   <div class="card">
     <div class="vp-row">
@@ -480,26 +425,26 @@ button,.btn{
       <div class="ve" id="vE"></div>
     </div>
     <div class="vc-btns">
-      <button class="btn-primary red btn-flex" id="btnVUnk">わからない</button>
-      <button class="btn-secondary btn-flex" id="btnVSkip">スキップ</button>
-      <button class="btn-primary green btn-flex" id="btnVKnow">覚えた！</button>
+      <button class="bp rd bflex" id="btnVUnk">✗ わからない</button>
+      <button class="bs bflex" id="btnVSkip">→ スキップ</button>
+      <button class="bp gr bflex" id="btnVKnow">✓ 覚えた！</button>
     </div>
     <div class="vsc" id="vSc">覚えた: 0 ／ 要復習: 0</div>
     <div class="divider"></div>
-    <button class="btn-secondary btn-full" id="btnVReset">🔄 新しい10語セット</button>
+    <button class="bs bfull" id="btnVReset">🔄 新しい10語セット</button>
   </div>
 </div>
 
-<!-- MATH -->
+<!-- ===== MATH ===== -->
 <div class="page" id="page-math">
-  <div style="margin-bottom:16px;">
-    <div style="font-weight:900;font-size:24px;color:var(--math);">数学 単元管理</div>
-    <div style="font-size:11px;color:var(--muted);margin-top:4px;">白チャート 数I・数A — 定着度チェック</div>
+  <div style="margin-bottom:14px;">
+    <div style="font-weight:900;font-size:23px;color:var(--math);">数学 単元管理</div>
+    <div style="font-size:11px;color:var(--muted);margin-top:3px;">白チャート 数I・数A — 定着度チェック</div>
   </div>
   <div class="card">
-    <div class="notice">タップで <b>定着（緑）→ 要復習（赤）→ 未着手（灰）</b> を切り替え</div>
+    <div class="notice">タップで <b>定着（緑）→ 要復習（赤）→ 未着手</b> を切り替え</div>
     <div id="mathList"></div>
-    <div style="font-size:10px;color:var(--muted);margin-top:8px;">🟢 定着　🔴 要復習　⚫ 未着手</div>
+    <div style="font-size:10px;color:var(--muted);margin-top:7px;">🟢 定着　🔴 要復習　⚫ 未着手</div>
   </div>
   <div class="card">
     <div class="card-title"><span class="dot" style="background:var(--gold)"></span>英検CSE スコア（2級取得済）</div>
@@ -509,15 +454,15 @@ button,.btn{
       <div class="cse"><div class="cse-lbl">Writing</div><div class="cse-s" style="color:var(--accent2)">517</div><div class="cse-t">⚠️ 最重要強化</div><div class="cse-bar"><div class="cse-f" style="width:55%;background:var(--accent2)"></div></div></div>
       <div class="cse"><div class="cse-lbl">Speaking</div><div class="cse-s" style="color:var(--gold)">524</div><div class="cse-t">Toronto前に強化</div><div class="cse-bar"><div class="cse-f" style="width:57%;background:var(--gold)"></div></div></div>
     </div>
-    <div style="text-align:center;font-size:11px;color:var(--muted);margin-top:10px;">2級CSE合計:<span style="color:var(--text)"> 2134</span>　準1目標:<span style="color:var(--gold);font-weight:700"> 2300+</span></div>
+    <div style="text-align:center;font-size:11px;color:var(--muted);margin-top:9px;">2級合計:<span style="color:var(--text)"> 2134</span>　準1目標:<span style="color:var(--gold);font-weight:700"> 2300+</span></div>
   </div>
 </div>
 
-<!-- LOG -->
+<!-- ===== LOG ===== -->
 <div class="page" id="page-log">
-  <div style="margin-bottom:16px;">
-    <div style="font-weight:900;font-size:24px;color:var(--jpn);">学習ログ</div>
-    <div style="font-size:11px;color:var(--muted);margin-top:4px;">毎日の学習を記録しよう</div>
+  <div style="margin-bottom:14px;">
+    <div style="font-weight:900;font-size:23px;color:var(--jpn);">学習ログ</div>
+    <div style="font-size:11px;color:var(--muted);margin-top:3px;">毎日の学習を記録して進捗を可視化</div>
   </div>
   <div class="card">
     <div class="card-title"><span class="dot" style="background:var(--jpn)"></span>記録する</div>
@@ -528,9 +473,9 @@ button,.btn{
       </select>
       <input type="number" id="logMin" placeholder="分" min="1" max="300">
       <input type="text" id="logNote" placeholder="メモ（白チャートp.50など）">
-      <button class="btn-primary" id="btnLog">記録</button>
+      <button class="bp" id="btnLog" style="padding:10px 14px;">記録</button>
     </div>
-    <div class="log-list" id="logList"><div style="text-align:center;padding:20px;color:var(--muted);font-size:12px;">まず学習を記録してみよう</div></div>
+    <div class="log-list" id="logList"><div style="text-align:center;padding:18px;color:var(--muted);font-size:12px;">まず学習を記録してみよう</div></div>
     <div class="log-sum" id="logSum"></div>
   </div>
 </div>
@@ -538,39 +483,140 @@ button,.btn{
 </div><!-- /main -->
 
 <!-- ===== BOTTOM TAB BAR ===== -->
-<div class="bottom-tabs" id="bottomTabs">
-  <button class="tab-btn active" data-page="home">
-    <span class="tab-icon">🏠</span>
-    <span class="tab-label">ホーム</span>
-  </button>
-  <button class="tab-btn" data-page="schedule">
-    <span class="tab-icon">📅</span>
-    <span class="tab-label">TODAY</span>
-  </button>
-  <button class="tab-btn" data-page="ai">
-    <span class="tab-icon">🤖</span>
-    <span class="tab-label">AI演習</span>
-  </button>
-  <button class="tab-btn" data-page="vocab">
-    <span class="tab-icon">📚</span>
-    <span class="tab-label">単語</span>
-  </button>
-  <button class="tab-btn" data-page="math">
-    <span class="tab-icon">📐</span>
-    <span class="tab-label">数学</span>
-  </button>
-  <button class="tab-btn" data-page="log">
-    <span class="tab-icon">📝</span>
-    <span class="tab-label">ログ</span>
-  </button>
+<div class="bottom-tabs">
+  <button class="tab-btn active" data-page="home"><span class="ti">🏠</span><span>ホーム</span></button>
+  <button class="tab-btn" data-page="schedule"><span class="ti">📅</span><span>TODAY</span></button>
+  <button class="tab-btn" data-page="ai"><span class="ti">🤖</span><span>AI演習</span></button>
+  <button class="tab-btn" data-page="vocab"><span class="ti">📚</span><span>単語</span></button>
+  <button class="tab-btn" data-page="math"><span class="ti">📐</span><span>数学</span></button>
+  <button class="tab-btn" data-page="log"><span class="ti">📝</span><span>ログ</span></button>
 </div>
 
 <script>
-// ========== テスト用アラート（起動確認） ==========
-alert('STUDY COMMAND 起動OK！タップ操作をテスト中...');
+'use strict';
 
-// ========== ユーティリティ ==========
-// iOSで確実にクリックを拾う汎用イベント登録
+// ============================================================
+// 🔊 Web Audio API — 効果音エンジン（外部ファイル不要）
+// ============================================================
+var AudioCtx = window.AudioContext || window.webkitAudioContext;
+var audioCtx = null;
+var soundOn = true;
+
+function getAudioCtx() {
+  if (!audioCtx) {
+    try { audioCtx = new AudioCtx(); } catch(e) {}
+  }
+  // iOSはユーザー操作後にresumeが必要
+  if (audioCtx && audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+  return audioCtx;
+}
+
+function playTone(freq, type, duration, vol, delay) {
+  if (!soundOn) return;
+  var ctx = getAudioCtx();
+  if (!ctx) return;
+  try {
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = type || 'sine';
+    osc.frequency.value = freq;
+    var t = ctx.currentTime + (delay || 0);
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(vol || 0.3, t + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + duration);
+    osc.start(t);
+    osc.stop(t + duration);
+  } catch(e) {}
+}
+
+// 各種効果音
+var SFX = {
+  // タブ切替：軽いクリック
+  tab: function() {
+    playTone(800, 'sine', 0.08, 0.15);
+  },
+  // スケジュール完了チェック：チェックポン
+  check: function() {
+    playTone(523, 'sine', 0.1, 0.25);
+    playTone(784, 'sine', 0.12, 0.25, 0.08);
+  },
+  // 問題生成開始：準備音
+  generate: function() {
+    playTone(440, 'triangle', 0.1, 0.2);
+    playTone(550, 'triangle', 0.1, 0.2, 0.1);
+  },
+  // 正解：ファンファーレ
+  correct: function() {
+    playTone(523, 'sine', 0.15, 0.3);
+    playTone(659, 'sine', 0.15, 0.3, 0.12);
+    playTone(784, 'sine', 0.2,  0.35, 0.24);
+  },
+  // 部分点：ポン
+  partial: function() {
+    playTone(440, 'sine', 0.12, 0.25);
+    playTone(494, 'sine', 0.12, 0.25, 0.1);
+  },
+  // 不正解：ブー
+  wrong: function() {
+    playTone(200, 'sawtooth', 0.12, 0.2);
+    playTone(150, 'sawtooth', 0.15, 0.2, 0.1);
+  },
+  // 単語：覚えた（高い音）
+  know: function() {
+    playTone(880, 'sine', 0.1, 0.25);
+    playTone(1100, 'sine', 0.1, 0.2, 0.09);
+  },
+  // 単語：わからない（低め）
+  unk: function() {
+    playTone(330, 'sine', 0.12, 0.2);
+  },
+  // 単語：セット完了
+  vocabDone: function() {
+    [523,659,784,1047].forEach(function(f,i){
+      playTone(f, 'sine', 0.15, 0.28, i*0.1);
+    });
+  },
+  // 数学トグル：定着
+  mathOk: function() {
+    playTone(660, 'sine', 0.09, 0.2);
+  },
+  // 数学トグル：要復習
+  mathNg: function() {
+    playTone(330, 'sine', 0.09, 0.2);
+  },
+  // ログ記録完了
+  log: function() {
+    playTone(600, 'sine', 0.08, 0.2);
+    playTone(800, 'sine', 0.08, 0.2, 0.08);
+  },
+  // メッセージ送信
+  send: function() {
+    playTone(700, 'sine', 0.06, 0.15);
+  },
+  // AI応答受信
+  receive: function() {
+    playTone(500, 'sine', 0.07, 0.1);
+    playTone(650, 'sine', 0.07, 0.1, 0.08);
+  }
+};
+
+// 音声 ON/OFF トグル
+var soundToggleEl = document.getElementById('soundToggle');
+addTap(soundToggleEl, function() {
+  getAudioCtx(); // iOSのAudioContext解放
+  soundOn = !soundOn;
+  soundToggleEl.textContent = soundOn ? '🔔' : '🔕';
+  soundToggleEl.classList.toggle('on', soundOn);
+  if (soundOn) SFX.tab();
+});
+
+// ============================================================
+// ユーティリティ
+// ============================================================
 function addTap(el, fn) {
   if (!el) return;
   var touched = false;
@@ -584,23 +630,25 @@ function addTap(el, fn) {
   });
 }
 
-// ========== 時計 ==========
+// 時計
 function tick() {
   var n = new Date();
-  var h = String(n.getHours()).padStart(2, '0');
-  var m = String(n.getMinutes()).padStart(2, '0');
-  document.getElementById('navClock').textContent = h + ':' + m;
+  document.getElementById('navClock').textContent =
+    String(n.getHours()).padStart(2,'0') + ':' + String(n.getMinutes()).padStart(2,'0');
 }
-tick();
-setInterval(tick, 30000);
+tick(); setInterval(tick, 30000);
 
-// ========== ナビゲーション ==========
+// ============================================================
+// ナビゲーション
+// ============================================================
 var tabs = document.querySelectorAll('.bottom-tabs .tab-btn');
 tabs.forEach(function(btn) {
   addTap(btn, function() {
+    getAudioCtx();
+    SFX.tab();
     var pid = btn.getAttribute('data-page');
-    document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
-    tabs.forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+    tabs.forEach(function(b){ b.classList.remove('active'); });
     var pg = document.getElementById('page-' + pid);
     if (pg) pg.classList.add('active');
     btn.classList.add('active');
@@ -609,41 +657,44 @@ tabs.forEach(function(btn) {
   });
 });
 
-// ========== スケジュール ==========
+// ============================================================
+// スケジュール
+// ============================================================
 var DOW = new Date().getDay();
 var SCHED = {
-  0: [{t:'朝',n:'読売新聞',d:'25m',c:'#5a6a80'},{t:'午前',n:'英検準1 単語30語',d:'30m',c:'#ffd166'},{t:'午後',n:'数学 自習（白チャート復習）',d:'60m',c:'#ff7340'},{t:'夜',n:'英語長文読解 1題',d:'30m',c:'#00c8ff'}],
-  1: [{t:'朝',n:'読売新聞',d:'25m',c:'#5a6a80'},{t:'放課後',n:'英検準1 単語20語＋文法',d:'40m',c:'#ffd166'},{t:'夜',n:'数学 問題演習',d:'45m',c:'#ff7340'},{t:'夜遅',n:'英語 WAB 予習',d:'20m',c:'#00c8ff'}],
-  2: [{t:'朝',n:'読売新聞',d:'25m',c:'#5a6a80'},{t:'夕方',n:'バスケ部練習',d:'2h',c:'#ff5f2e'},{t:'夜',n:'英検準1 単語15語',d:'20m',c:'#ffd166'},{t:'夜',n:'社会 復習',d:'30m',c:'#ffd166'}],
-  3: [{t:'早朝',n:'朝練（バスケ）',d:'1h',c:'#ff5f2e'},{t:'朝',n:'読売新聞（短縮）',d:'15m',c:'#5a6a80'},{t:'夜',n:'数学 問題演習',d:'50m',c:'#ff7340'},{t:'夜',n:'英検 ライティング 1題',d:'30m',c:'#ffd166'}],
-  4: [{t:'朝',n:'読売新聞',d:'25m',c:'#5a6a80'},{t:'夕方',n:'バスケ部練習',d:'2h',c:'#ff5f2e'},{t:'夜',n:'早稲アカ WAB 復習',d:'30m',c:'#00c8ff'},{t:'夜',n:'英検 単語10語',d:'15m',c:'#ffd166'}],
-  5: [{t:'朝',n:'読売新聞',d:'25m',c:'#5a6a80'},{t:'夕方',n:'バスケ部練習',d:'2h',c:'#ff5f2e'},{t:'夜',n:'国語 読解練習',d:'30m',c:'#6effa0'},{t:'夜',n:'英検 リスニング 10問',d:'20m',c:'#ffd166'}],
-  6: [{t:'早朝',n:'朝練（バスケ）',d:'1h',c:'#ff5f2e'},{t:'朝',n:'読売新聞',d:'25m',c:'#5a6a80'},{t:'午後',n:'早稲アカ TOP WIN BOOSTER',d:'90m',c:'#00c8ff'},{t:'夜',n:'数学 1単元まとめ演習',d:'60m',c:'#ff7340'},{t:'夜',n:'英検準1 単語30語',d:'30m',c:'#ffd166'}]
+  0:[{t:'朝',n:'読売新聞',d:'25m',c:'#5a6a80'},{t:'午前',n:'英検準1 単語30語',d:'30m',c:'#ffd166'},{t:'午後',n:'数学 自習（白チャート復習）',d:'60m',c:'#ff7340'},{t:'夜',n:'英語長文読解 1題',d:'30m',c:'#00c8ff'}],
+  1:[{t:'朝',n:'読売新聞',d:'25m',c:'#5a6a80'},{t:'放課後',n:'英検準1 単語20語＋文法',d:'40m',c:'#ffd166'},{t:'夜',n:'数学 問題演習',d:'45m',c:'#ff7340'},{t:'夜遅',n:'英語 WAB 予習',d:'20m',c:'#00c8ff'}],
+  2:[{t:'朝',n:'読売新聞',d:'25m',c:'#5a6a80'},{t:'夕方',n:'バスケ部練習',d:'2h',c:'#ff5f2e'},{t:'夜',n:'英検準1 単語15語',d:'20m',c:'#ffd166'},{t:'夜',n:'社会 復習',d:'30m',c:'#ffd166'}],
+  3:[{t:'早朝',n:'朝練（バスケ）',d:'1h',c:'#ff5f2e'},{t:'朝',n:'読売新聞（短縮）',d:'15m',c:'#5a6a80'},{t:'夜',n:'数学 問題演習',d:'50m',c:'#ff7340'},{t:'夜',n:'英検 ライティング 1題',d:'30m',c:'#ffd166'}],
+  4:[{t:'朝',n:'読売新聞',d:'25m',c:'#5a6a80'},{t:'夕方',n:'バスケ部練習',d:'2h',c:'#ff5f2e'},{t:'夜',n:'早稲アカ WAB 復習',d:'30m',c:'#00c8ff'},{t:'夜',n:'英検 単語10語',d:'15m',c:'#ffd166'}],
+  5:[{t:'朝',n:'読売新聞',d:'25m',c:'#5a6a80'},{t:'夕方',n:'バスケ部練習',d:'2h',c:'#ff5f2e'},{t:'夜',n:'国語 読解練習',d:'30m',c:'#6effa0'},{t:'夜',n:'英検 リスニング 10問',d:'20m',c:'#ffd166'}],
+  6:[{t:'早朝',n:'朝練（バスケ）',d:'1h',c:'#ff5f2e'},{t:'朝',n:'読売新聞',d:'25m',c:'#5a6a80'},{t:'午後',n:'早稲アカ TOP WIN BOOSTER',d:'90m',c:'#00c8ff'},{t:'夜',n:'数学 1単元まとめ演習',d:'60m',c:'#ff7340'},{t:'夜',n:'英検準1 単語30語',d:'30m',c:'#ffd166'}]
 };
-var todayPlan = SCHED[DOW] || SCHED[1];
-var doneMap = {};
-todayPlan.forEach(function(_, i) { doneMap[i] = false; });
+var plan = SCHED[DOW] || SCHED[1];
+var done = {};
+plan.forEach(function(_,i){ done[i]=false; });
 
-var dJP = ['日','月','火','水','木','金','土'];
-var nd = new Date();
-var schedDateEl = document.getElementById('schedDate');
-if (schedDateEl) schedDateEl.textContent = nd.getFullYear() + '年' + (nd.getMonth()+1) + '月' + nd.getDate() + '日（' + dJP[DOW] + '）';
+var dJP=['日','月','火','水','木','金','土'];
+var nd=new Date();
+document.getElementById('schedDate').textContent =
+  nd.getFullYear()+'年'+(nd.getMonth()+1)+'月'+nd.getDate()+'日（'+dJP[DOW]+'）';
 
 function renderSched() {
   var c = document.getElementById('schedList');
-  if (!c) return;
   c.innerHTML = '';
-  todayPlan.forEach(function(it, i) {
+  plan.forEach(function(it,i){
     var div = document.createElement('div');
-    div.className = 'si' + (doneMap[i] ? ' done' : '');
+    div.className = 'si'+(done[i]?' done':'');
     div.innerHTML =
-      '<span class="si-time">' + it.t + '</span>' +
-      '<span class="si-dot" style="background:' + it.c + '"></span>' +
-      '<span class="si-title">' + it.n + '</span>' +
-      '<span class="si-dur">' + it.d + '</span>' +
-      '<span class="si-chk">' + (doneMap[i] ? '✓' : '') + '</span>';
-    addTap(div, function() {
-      doneMap[i] = !doneMap[i];
+      '<span class="si-t">'+it.t+'</span>'+
+      '<span class="si-d" style="background:'+it.c+'"></span>'+
+      '<span class="si-n">'+it.n+'</span>'+
+      '<span class="si-dur">'+it.d+'</span>'+
+      '<span class="si-chk">'+(done[i]?'✓':'')+'</span>';
+    addTap(div, function(){
+      getAudioCtx();
+      done[i]=!done[i];
+      SFX.check();
       renderSched();
     });
     c.appendChild(div);
@@ -652,7 +703,7 @@ function renderSched() {
 renderSched();
 
 // 週間グリッド
-var WBLOCKS = {
+var WBLOCKS={
   0:[{l:'新聞',c:'news'},{l:'英検',c:'eiken'},{l:'数学',c:'math'}],
   1:[{l:'新聞',c:'news'},{l:'英検',c:'eiken'},{l:'数学',c:'math'},{l:'英語',c:'eng'}],
   2:[{l:'新聞',c:'news'},{l:'部活',c:'club'},{l:'英検',c:'eiken'},{l:'社会',c:'jpn'}],
@@ -661,52 +712,254 @@ var WBLOCKS = {
   5:[{l:'新聞',c:'news'},{l:'部活',c:'club'},{l:'国語',c:'jpn'},{l:'英検L',c:'eiken'}],
   6:[{l:'朝練',c:'club'},{l:'新聞',c:'news'},{l:'WAB塾',c:'eng'},{l:'数学',c:'math'},{l:'英検',c:'eiken'}]
 };
-var DLBL = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
-var wg = document.getElementById('weekGrid');
-if (wg) {
-  DLBL.forEach(function(d, i) {
-    var col = document.createElement('div');
-    col.className = 'wdc';
-    var lbl = document.createElement('div');
-    lbl.className = 'wdl' + (i === DOW ? ' today' : '');
-    lbl.textContent = d;
-    col.appendChild(lbl);
-    (WBLOCKS[i] || []).forEach(function(b) {
-      var blk = document.createElement('div');
-      blk.className = 'wb ' + b.c;
-      blk.textContent = b.l;
-      col.appendChild(blk);
-    });
-    wg.appendChild(col);
+var DLBL=['SUN','MON','TUE','WED','THU','FRI','SAT'];
+var wg=document.getElementById('weekGrid');
+DLBL.forEach(function(d,i){
+  var col=document.createElement('div'); col.className='wdc';
+  var lbl=document.createElement('div'); lbl.className='wdl'+(i===DOW?' today':''); lbl.textContent=d;
+  col.appendChild(lbl);
+  (WBLOCKS[i]||[]).forEach(function(b){
+    var blk=document.createElement('div'); blk.className='wb '+b.c; blk.textContent=b.l;
+    col.appendChild(blk);
   });
-}
+  wg.appendChild(col);
+});
 
-// ========== ホーム リング ==========
-var RINGS = [
+// ============================================================
+// ホーム リング
+// ============================================================
+var RINGS=[
   {label:'英語偏差値',val:63,max:80,color:'#00c8ff'},
   {label:'数学偏差値',val:58,max:80,color:'#ff7340'},
   {label:'英検CSE%',val:Math.round(2134/2600*100),max:100,color:'#ffd166'},
   {label:'国語偏差値',val:63,max:80,color:'#6effa0'}
 ];
-var ringsEl = document.getElementById('rings');
-if (ringsEl) {
-  ringsEl.innerHTML = RINGS.map(function(r) {
-    var R = 30, circ = 2 * Math.PI * R;
-    var dash = (circ * r.val / r.max).toFixed(1);
-    return '<div class="ri">' +
-      '<svg class="ring-svg" width="76" height="76" viewBox="0 0 76 76">' +
-        '<circle cx="38" cy="38" r="' + R + '" fill="none" stroke="#1e2a3a" stroke-width="5"/>' +
-        '<circle cx="38" cy="38" r="' + R + '" fill="none" stroke="' + r.color + '" stroke-width="5"' +
-          ' stroke-dasharray="' + dash + ' ' + circ.toFixed(1) + '" stroke-linecap="round"/>' +
-      '</svg>' +
-      '<div class="ri-val" style="color:' + r.color + '">' + r.val + '</div>' +
-      '<span class="ri-lbl">' + r.label + '</span>' +
-    '</div>';
-  }).join('');
+document.getElementById('rings').innerHTML=RINGS.map(function(r){
+  var R=28,circ=2*Math.PI*R,dash=(circ*r.val/r.max).toFixed(1);
+  return '<div class="ri">'+
+    '<svg class="ring-svg" width="72" height="72" viewBox="0 0 72 72">'+
+      '<circle cx="36" cy="36" r="'+R+'" fill="none" stroke="#1e2a3a" stroke-width="5"/>'+
+      '<circle cx="36" cy="36" r="'+R+'" fill="none" stroke="'+r.color+'" stroke-width="5"'+
+        ' stroke-dasharray="'+dash+' '+circ.toFixed(1)+'" stroke-linecap="round"/>'+
+    '</svg>'+
+    '<div class="ri-val" style="color:'+r.color+'">'+r.val+'</div>'+
+    '<span class="ri-lbl">'+r.label+'</span>'+
+  '</div>';
+}).join('');
+
+// ============================================================
+// AI QUIZ — Cloudflare Worker経由でアプリ内完結
+// ============================================================
+var WORKER_URL = '';
+try { WORKER_URL = localStorage.getItem('workerUrl') || ''; } catch(e){}
+
+// Worker URL 設定UI
+var workerSetupEl = document.getElementById('workerSetup');
+var workerUrlEl   = document.getElementById('workerUrl');
+var workerStatusEl= document.getElementById('workerStatus');
+workerUrlEl.value = WORKER_URL;
+
+function updateWorkerUI() {
+  if (WORKER_URL) {
+    workerStatusEl.textContent = '✅ 接続設定済: ' + WORKER_URL;
+    workerStatusEl.style.color = 'var(--accent3)';
+  } else {
+    workerStatusEl.textContent = '⚠️ 未設定 — Worker URLを入力して保存してください';
+    workerStatusEl.style.color = 'var(--gold)';
+  }
+}
+updateWorkerUI();
+
+addTap(document.getElementById('btnSaveWorker'), function(){
+  var v = workerUrlEl.value.trim().replace(/\/$/, '');
+  if (!v.startsWith('http')) { workerStatusEl.textContent='⚠️ URLが正しくありません'; return; }
+  WORKER_URL = v;
+  try { localStorage.setItem('workerUrl', v); } catch(e){}
+  updateWorkerUI();
+  SFX.log();
+});
+
+// AI状態
+var curSubj = '英語長文読解';
+var curMode = 'q';
+var chatHistory = [];  // {role:'user'|'assistant', content:string}
+var aiThinking = false;
+var qOkCount = 0, qAllCount = 0;
+
+var SYSTEM_PROMPT = function(subj, mode) {
+  var modeText = {
+    q: '問題を1問出題してください。出題後は生徒の解答を待ってください。',
+    e: '間違えやすいポイントや解き方のコツを解説してください。',
+    r: '短い確認テストを3問出題してください。'
+  }[mode] || '問題を1問出題してください。';
+
+  return '【あなたの役割】開成中学2年生専属のAI家庭教師です。'+
+    '生徒プロフィール: 英語偏差値63・国語偏差値63・数学偏差値58（苦手意識あり）、'+
+    '英検2級取得済（CSE R564 L529 W517 S524）・準1級挑戦中、'+
+    '東大/国公立医学部/アイビーリーグ志望、バスケ部主将、毎朝読売新聞を読む。\n\n'+
+    '【今回の科目】' + subj + '\n'+
+    '【指示】' + modeText + '\n\n'+
+    '【採点ルール】生徒が解答を送ってきたら:\n'+
+    '①必ず冒頭に【結果: 正解】【結果: 部分点】【結果: 不正解】のどれかを明記\n'+
+    '②解説・模範解答・次のステップを日本語で丁寧に説明\n'+
+    '③励ましのコメントを添える\n\n'+
+    '返答は日本語。数式はテキストで書く（LaTeX不要）。簡潔かつ丁寧に。';
+};
+
+// 科目ボタン
+document.getElementById('subjBtns').querySelectorAll('.sjb').forEach(function(btn){
+  addTap(btn, function(){
+    curSubj = btn.getAttribute('data-subj');
+    var cls = btn.getAttribute('data-cls');
+    document.querySelectorAll('#subjBtns .sjb').forEach(function(b){ b.className='sjb'; });
+    btn.classList.add(cls);
+    SFX.tab();
+  });
+});
+// モードボタン
+document.getElementById('modeBtns').querySelectorAll('.sjb').forEach(function(btn){
+  addTap(btn, function(){
+    curMode = btn.getAttribute('data-mode');
+    document.querySelectorAll('#modeBtns .sjb').forEach(function(b){ b.className='sjb se'; b.className='sjb'; });
+    btn.classList.add('se');
+    SFX.tab();
+  });
+});
+
+// チャットにメッセージ追加
+function addMsg(role, text, resultType) {
+  var area = document.getElementById('chatArea');
+  var div = document.createElement('div');
+  div.className = 'msg ' + (role==='user'?'user':'ai');
+  var bubbleCls = 'msg-bubble';
+  if (resultType === 'ok') bubbleCls += ' ok-bubble';
+  else if (resultType === 'ng') bubbleCls += ' ng-bubble';
+  else if (resultType === 'pt') bubbleCls += ' pt-bubble';
+  div.innerHTML =
+    '<div class="msg-icon">'+(role==='user'?'🙋':'🤖')+'</div>'+
+    '<div class="'+bubbleCls+'">'+escHtml(text)+'</div>';
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
 }
 
-// ========== 単語ドリル ==========
-var VOCAB = [
+// ローディング表示
+function addLoading() {
+  var area = document.getElementById('chatArea');
+  var div = document.createElement('div');
+  div.className = 'msg ai';
+  div.id = 'loadingMsg';
+  div.innerHTML = '<div class="msg-icon">🤖</div><div class="msg-bubble"><span class="ld"><span></span><span></span><span></span></span> AIが考えています...</div>';
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+}
+function removeLoading() {
+  var el = document.getElementById('loadingMsg');
+  if (el) el.remove();
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+
+// Worker経由でClaudeを呼ぶ
+async function callAI(userMsg) {
+  if (!WORKER_URL) {
+    addMsg('ai', '⚠️ Worker URLが設定されていません。\n上の設定欄にCloudflare WorkerのURLを入力して「保存」してください。');
+    return;
+  }
+  chatHistory.push({role:'user', content:userMsg});
+  addMsg('user', userMsg);
+  addLoading();
+  SFX.send();
+  aiThinking = true;
+
+  try {
+    var res = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        system: SYSTEM_PROMPT(curSubj, curMode),
+        messages: chatHistory
+      })
+    });
+    var data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+
+    var reply = (data.content||[]).map(function(c){return c.text||'';}).join('');
+    removeLoading();
+    chatHistory.push({role:'assistant', content:reply});
+
+    // 結果判定で色分け＋効果音
+    var rt = null;
+    if (reply.indexOf('【結果: 正解】')>=0) { rt='ok'; SFX.correct(); qOkCount++; qAllCount++; }
+    else if (reply.indexOf('【結果: 部分点】')>=0) { rt='pt'; SFX.partial(); qAllCount++; }
+    else if (reply.indexOf('【結果: 不正解】')>=0) { rt='ng'; SFX.wrong(); qAllCount++; }
+    else { SFX.receive(); }
+
+    addMsg('ai', reply, rt);
+
+    if (rt) {
+      document.getElementById('qOk').textContent = qOkCount;
+      document.getElementById('qTot').textContent = '/ '+qAllCount+'問';
+    }
+  } catch(e) {
+    removeLoading();
+    addMsg('ai', '⚠️ エラーが発生しました: '+e.message+'\n\nWorker URLと接続を確認してください。');
+    chatHistory.pop(); // userメッセージを取り消し
+  }
+  aiThinking = false;
+}
+
+// 新しい問題を出す
+addTap(document.getElementById('btnNewQ'), function(){
+  getAudioCtx();
+  if (aiThinking) return;
+  chatHistory = [];
+  document.getElementById('chatArea').innerHTML = '';
+  SFX.generate();
+  callAI('お願いします。');
+});
+
+// 解答送信
+addTap(document.getElementById('btnSend'), function(){
+  getAudioCtx();
+  if (aiThinking) return;
+  var ta = document.getElementById('chatInput');
+  var msg = ta.value.trim();
+  if (!msg) return;
+  ta.value = '';
+  callAI(msg);
+});
+
+// ヒント
+addTap(document.getElementById('btnHint'), function(){
+  getAudioCtx();
+  if (aiThinking) return;
+  callAI('ヒントをください。答えは言わないでください。');
+});
+
+// クリア
+addTap(document.getElementById('btnClear'), function(){
+  getAudioCtx();
+  chatHistory = [];
+  document.getElementById('chatArea').innerHTML =
+    '<div class="msg ai"><div class="msg-icon">🤖</div><div class="msg-bubble">チャットをクリアしました。「新しい問題を出す」でスタート！</div></div>';
+  SFX.tab();
+});
+
+// Enterキー送信（PCでも使えるように）
+document.getElementById('chatInput').addEventListener('keydown', function(e){
+  if (e.key==='Enter' && !e.shiftKey && !aiThinking) {
+    e.preventDefault();
+    var msg = this.value.trim();
+    if (msg) { this.value=''; callAI(msg); }
+  }
+});
+
+// ============================================================
+// 単語ドリル
+// ============================================================
+var VOCAB=[
   {w:'alleviate',r:'[əlíːvièit]',m:'〜を軽減する・和らげる',e:'Exercise can alleviate stress.'},
   {w:'contemplate',r:'[kɑ́ntəmplèit]',m:'〜を熟考する',e:'He contemplated his next move.'},
   {w:'deteriorate',r:'[ditíəriərèit]',m:'悪化する・劣化する',e:'Her health began to deteriorate.'},
@@ -733,203 +986,144 @@ var VOCAB = [
   {w:'ephemeral',r:'[ifémərəl]',m:'はかない・短命な',e:'Fame is often ephemeral.'},
   {w:'fervent',r:'[fɜ́ːrvənt]',m:'熱烈な・熱心な',e:'She is a fervent supporter.'}
 ];
-var vQ=[], vIdx=0, vKnown=0, vUnk=0;
+var vQ=[],vIdx=0,vKnown=0,vUnk=0;
 
-function initVocab() {
-  vQ = VOCAB.slice().sort(function(){return Math.random()-.5;}).slice(0,10);
-  vIdx=0; vKnown=0; vUnk=0;
-  showVC();
+function initVocab(){
+  vQ=VOCAB.slice().sort(function(){return Math.random()-.5;}).slice(0,10);
+  vIdx=0;vKnown=0;vUnk=0;showVC();
 }
-function showVC() {
-  if (vIdx >= vQ.length) {
-    document.getElementById('vW').textContent = '🎉 完了！';
-    document.getElementById('vR').textContent = '覚えた:' + vKnown + '語 / 要復習:' + vUnk + '語';
-    document.getElementById('vM').textContent = '';
-    document.getElementById('vE').textContent = '';
+function showVC(){
+  if(vIdx>=vQ.length){
+    document.getElementById('vW').textContent='🎉 完了！';
+    document.getElementById('vR').textContent='覚えた:'+vKnown+'語 / 要復習:'+vUnk+'語';
+    document.getElementById('vM').textContent='';
+    document.getElementById('vE').textContent='';
     document.getElementById('vocabCard').classList.remove('flipped');
-    document.getElementById('vpFill').style.width = '100%';
-    document.getElementById('vpCnt').textContent = vQ.length + ' / ' + vQ.length;
+    document.getElementById('vpFill').style.width='100%';
+    document.getElementById('vpCnt').textContent=vQ.length+' / '+vQ.length;
+    SFX.vocabDone();
     return;
   }
-  var v = vQ[vIdx];
-  document.getElementById('vW').textContent = v.w;
-  document.getElementById('vR').textContent = v.r;
-  document.getElementById('vM').textContent = v.m;
-  document.getElementById('vE').textContent = '例: ' + v.e;
+  var v=vQ[vIdx];
+  document.getElementById('vW').textContent=v.w;
+  document.getElementById('vR').textContent=v.r;
+  document.getElementById('vM').textContent=v.m;
+  document.getElementById('vE').textContent='例: '+v.e;
   document.getElementById('vocabCard').classList.remove('flipped');
-  document.getElementById('vpFill').style.width = Math.round(vIdx/vQ.length*100) + '%';
-  document.getElementById('vpCnt').textContent = vIdx + ' / ' + vQ.length;
-  document.getElementById('vSc').textContent = '覚えた: ' + vKnown + ' ／ 要復習: ' + vUnk;
+  document.getElementById('vpFill').style.width=Math.round(vIdx/vQ.length*100)+'%';
+  document.getElementById('vpCnt').textContent=vIdx+' / '+vQ.length;
+  document.getElementById('vSc').textContent='覚えた: '+vKnown+' ／ 要復習: '+vUnk;
 }
-addTap(document.getElementById('vocabCard'), function() {
-  document.getElementById('vocabCard').classList.toggle('flipped');
-});
-addTap(document.getElementById('btnVKnow'), function() { vKnown++; vIdx++; showVC(); });
-addTap(document.getElementById('btnVUnk'), function() { vUnk++; vQ.push(vQ[vIdx]); vIdx++; showVC(); });
-addTap(document.getElementById('btnVSkip'), function() { vIdx++; showVC(); });
-addTap(document.getElementById('btnVReset'), function() { initVocab(); });
+addTap(document.getElementById('vocabCard'),function(){ getAudioCtx(); SFX.tab(); document.getElementById('vocabCard').classList.toggle('flipped'); });
+addTap(document.getElementById('btnVKnow'),function(){ getAudioCtx(); SFX.know(); vKnown++;vIdx++;showVC(); });
+addTap(document.getElementById('btnVUnk'), function(){ getAudioCtx(); SFX.unk();  vUnk++;vQ.push(vQ[vIdx]);vIdx++;showVC(); });
+addTap(document.getElementById('btnVSkip'),function(){ getAudioCtx(); SFX.tab();  vIdx++;showVC(); });
+addTap(document.getElementById('btnVReset'),function(){ getAudioCtx(); SFX.generate(); initVocab(); });
 initVocab();
 
-// ========== 数学 ==========
-var MTOPICS = [
+// ============================================================
+// 数学
+// ============================================================
+var MTOPICS=[
   {l:'数と式・整式',s:'数I'},{l:'集合と論理',s:'数I'},{l:'二次関数',s:'数I'},
   {l:'二次不等式',s:'数I'},{l:'三角比（sin/cos/tan）',s:'数I'},{l:'正弦・余弦定理',s:'数I'},
   {l:'データの分析',s:'数I'},{l:'場合の数・順列',s:'数A'},{l:'組み合わせ',s:'数A'},
   {l:'確率（基本）',s:'数A'},{l:'条件付き確率',s:'数A'},{l:'整数の性質',s:'数A'},
   {l:'図形の性質',s:'数A'},{l:'互除法',s:'数A'}
 ];
-var MS = {};
-MTOPICS.forEach(function(_, i) {
-  try { MS[i] = localStorage.getItem('ms_' + i) || 'none'; } catch(e) { MS[i] = 'none'; }
-});
-function renderMath() {
-  var secs = [];
-  MTOPICS.forEach(function(t) { if (secs.indexOf(t.s) < 0) secs.push(t.s); });
-  var html = '';
-  secs.forEach(function(sec) {
-    html += '<div class="sec-head">' + sec + '</div>';
-    MTOPICS.forEach(function(t, i) {
-      if (t.s !== sec) return;
-      var s = MS[i];
-      html += '<div class="mt' + (s==='mastered'?' ok':s==='struggling'?' ng':'') + '" data-mi="' + i + '">' +
-        '<span class="mt-dot"></span>' +
-        '<span class="mt-lbl">' + t.l + '</span>' +
-        '<span class="mt-sec">' + t.s + '</span>' +
+var MS={};
+MTOPICS.forEach(function(_,i){ try{MS[i]=localStorage.getItem('ms_'+i)||'none';}catch(e){MS[i]='none';} });
+
+function renderMath(){
+  var secs=[];
+  MTOPICS.forEach(function(t){ if(secs.indexOf(t.s)<0) secs.push(t.s); });
+  var html='';
+  secs.forEach(function(sec){
+    html+='<div class="sec-head">'+sec+'</div>';
+    MTOPICS.forEach(function(t,i){
+      if(t.s!==sec) return;
+      var s=MS[i];
+      html+='<div class="mt'+(s==='mastered'?' ok':s==='struggling'?' ng':'')+'" data-mi="'+i+'">'+
+        '<span class="mt-dot"></span>'+
+        '<span class="mt-lbl">'+t.l+'</span>'+
+        '<span class="mt-sec">'+t.s+'</span>'+
       '</div>';
     });
   });
-  var c = document.getElementById('mathList');
-  if (!c) return;
-  c.innerHTML = html;
-  c.querySelectorAll('.mt').forEach(function(el) {
-    addTap(el, function() {
-      var i = parseInt(el.getAttribute('data-mi'));
-      MS[i] = MS[i]==='none'?'mastered':MS[i]==='mastered'?'struggling':'none';
-      try { localStorage.setItem('ms_'+i, MS[i]); } catch(e) {}
+  var c=document.getElementById('mathList');
+  c.innerHTML=html;
+  c.querySelectorAll('.mt').forEach(function(el){
+    addTap(el,function(){
+      getAudioCtx();
+      var i=parseInt(el.getAttribute('data-mi'));
+      var prev=MS[i];
+      MS[i]=MS[i]==='none'?'mastered':MS[i]==='mastered'?'struggling':'none';
+      try{localStorage.setItem('ms_'+i,MS[i]);}catch(e){}
+      if(MS[i]==='mastered') SFX.mathOk();
+      else if(MS[i]==='struggling') SFX.mathNg();
+      else SFX.tab();
       renderMath();
     });
   });
 }
 renderMath();
 
-// ========== AI QUIZ — URL方式（コピー不要） ==========
-var curSubj = '英語長文読解';
-var curMode = '問題を1問出題して';
+// ============================================================
+// ログ
+// ============================================================
+var SCOL={'英語':'#00c8ff','数学':'#ff7340','国語':'#6effa0','社会':'#ffd166','英検準1':'#ffd166','模試対策':'#00c8ff','新聞':'#5a6a80'};
+var logs=[];
+try{var sl=localStorage.getItem('slog2');if(sl)logs=JSON.parse(sl);}catch(e){}
 
-var PROMPTS = {
-  '英語長文読解':
-    '私は開成中学2年生です。英語は比較的得意で模試偏差値は63程度、英検準1級に挑戦中（2級CSE: R564 L529 W517 S524）、将来は東大・国公立医学部・アイビーリーグを目指しています。\n\n英語長文読解の{MODE}ください。\n条件：\n・難易度は英検準1〜2級レベル（高校1〜2年相当）\n・150〜200語程度のパッセージ＋設問（内容把握・語彙・記述を含む）\n・問題を解いたら採点・模範解答・解説もお願いします。',
-  '英検準1級英作文':
-    '私は開成中学2年生です。英検2級取得済み（CSE: R564 L529 W517 S524）で現在準1級を目指しています。ライティング（517点）が最も伸びしろがある部分です。\n\n英検準1級の意見論述ライティング問題（120〜150語）を{MODE}ください。\n条件：\n・採点は内容・構成・語彙・文法の4観点で行ってください\n・模範解答と私の答案へのフィードバックもお願いします。',
-  '数学（数I・数A）':
-    '私は開成中学2年生です。数学に苦手意識があり模試偏差値は58程度です。白チャート数I・数Aを一周済みです。将来は東大または国公立医学部を目指しています。\n\n数I・数Aの範囲で{MODE}ください。\n条件：\n・難易度は教科書〜入試基礎レベル\n・二次関数・三角比・確率・整数の性質のどれか1単元\n・解き方の考え方を丁寧に解説してください\n・苦手克服のポイントも教えてください。',
-  '国語現代文読解':
-    '私は開成中学2年生です。国語は比較的得意で模試偏差値は63程度です。毎朝読売新聞を20〜30分読む習慣があります。将来は東大を目指しています。\n\n現代文読解（評論文）の{MODE}ください。\n条件：\n・難易度は高校入試〜大学入試基礎レベル\n・200〜400字程度の文章＋設問（傍線部説明・内容把握・記述）\n・解説では文章の論理構造の読み方も教えてください。'
-};
-
-function buildPrompt() {
-  var tmpl = PROMPTS[curSubj] || PROMPTS['英語長文読解'];
-  return tmpl.replace('{MODE}', curMode);
-}
-
-function updateClaudeLink() {
-  // claude.ai/new?q=... にプロンプトをURLエンコードして渡す
-  var prompt = buildPrompt();
-  var encoded = encodeURIComponent(prompt);
-  var link = document.getElementById('claudeLink');
-  if (link) {
-    link.href = 'https://claude.ai/new?q=' + encoded;
-  }
-}
-
-function updatePromptPreview() {
-  var el = document.getElementById('promptText');
-  if (el) el.textContent = buildPrompt();
-  updateClaudeLink();
-}
-
-// 科目ボタン
-document.getElementById('subjBtns').querySelectorAll('.sj-btn').forEach(function(btn) {
-  addTap(btn, function() {
-    curSubj = btn.getAttribute('data-subj');
-    var cls = btn.getAttribute('data-cls') || 'sel-eng';
-    document.querySelectorAll('#subjBtns .sj-btn').forEach(function(b) { b.className = 'sj-btn'; });
-    btn.classList.add(cls);
-    updatePromptPreview();
-  });
-});
-
-// モードボタン
-document.getElementById('modeBtns').querySelectorAll('.sj-btn').forEach(function(btn) {
-  addTap(btn, function() {
-    curMode = btn.getAttribute('data-mode');
-    document.querySelectorAll('#modeBtns .sj-btn').forEach(function(b) { b.className = 'sj-btn'; });
-    btn.classList.add('sel-eng');
-    updatePromptPreview();
-  });
-});
-
-// 初期表示
-updatePromptPreview();
-
-// ========== ログ ==========
-var SCOL = {'英語':'#00c8ff','数学':'#ff7340','国語':'#6effa0','社会':'#ffd166','英検準1':'#ffd166','模試対策':'#00c8ff','新聞':'#5a6a80'};
-var logs = [];
-try { var sl = localStorage.getItem('slog2'); if(sl) logs = JSON.parse(sl); } catch(e) {}
-
-function addLog() {
-  var subj = document.getElementById('logSubj').value;
-  var min = parseInt(document.getElementById('logMin').value);
-  var note = document.getElementById('logNote').value.trim();
-  if (!min || min < 1) { alert('分数を入力してください'); return; }
-  var n = new Date();
-  logs.unshift({
-    subj:subj, min:min, note:note,
-    time: String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0'),
-    date: n.toDateString()
-  });
-  if (logs.length > 100) logs.pop();
-  try { localStorage.setItem('slog2', JSON.stringify(logs)); } catch(e) {}
-  document.getElementById('logMin').value = '';
-  document.getElementById('logNote').value = '';
+function addLog(){
+  var subj=document.getElementById('logSubj').value;
+  var min=parseInt(document.getElementById('logMin').value);
+  var note=document.getElementById('logNote').value.trim();
+  if(!min||min<1){return;}
+  var n=new Date();
+  logs.unshift({subj:subj,min:min,note:note,
+    time:String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0'),
+    date:n.toDateString()});
+  if(logs.length>100) logs.pop();
+  try{localStorage.setItem('slog2',JSON.stringify(logs));}catch(e){}
+  document.getElementById('logMin').value='';
+  document.getElementById('logNote').value='';
+  SFX.log();
   renderLog();
 }
-function renderLog() {
-  var c = document.getElementById('logList');
-  if (!logs.length) {
-    c.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-size:12px;">まず学習を記録してみよう</div>';
-  } else {
-    c.innerHTML = logs.slice(0,20).map(function(l) {
-      return '<div class="le">' +
-        '<span class="le-s" style="color:' + (SCOL[l.subj]||'#dde4ee') + '">' + l.subj + '</span>' +
-        '<span class="le-d">' + l.min + '分</span>' +
-        '<span class="le-n">' + (l.note||'—') + '</span>' +
-        '<span class="le-t">' + l.time + '</span>' +
+function renderLog(){
+  var c=document.getElementById('logList');
+  if(!logs.length){
+    c.innerHTML='<div style="text-align:center;padding:18px;color:var(--muted);font-size:12px;">まず学習を記録してみよう</div>';
+  }else{
+    c.innerHTML=logs.slice(0,20).map(function(l){
+      return '<div class="le">'+
+        '<span class="le-s" style="color:'+(SCOL[l.subj]||'#dde4ee')+'">'+l.subj+'</span>'+
+        '<span class="le-d">'+l.min+'分</span>'+
+        '<span class="le-n">'+(l.note||'—')+'</span>'+
+        '<span class="le-t">'+l.time+'</span>'+
       '</div>';
     }).join('');
   }
-  var tot = {};
-  logs.forEach(function(l) { tot[l.subj] = (tot[l.subj]||0) + l.min; });
-  document.getElementById('logSum').innerHTML = Object.keys(tot).map(function(s) {
-    return '<span style="color:' + (SCOL[s]||'var(--muted)') + '">' + s + ': <strong>' + tot[s] + '分</strong></span>';
+  var tot={};
+  logs.forEach(function(l){tot[l.subj]=(tot[l.subj]||0)+l.min;});
+  document.getElementById('logSum').innerHTML=Object.keys(tot).map(function(s){
+    return '<span style="color:'+(SCOL[s]||'var(--muted)')+'">'+s+': <strong>'+tot[s]+'分</strong></span>';
   }).join('');
 }
-function updateWeekly() {
-  var tot = {};
-  var ago = new Date(); ago.setDate(ago.getDate()-7);
-  logs.forEach(function(l) {
-    try { if(new Date(l.date) >= ago) tot[l.subj] = (tot[l.subj]||0) + l.min; } catch(e) {}
-  });
-  var el = document.getElementById('weeklySummary');
-  if (!Object.keys(tot).length) {
-    el.innerHTML = '<span style="color:var(--muted);font-size:12px;">ログタブで記録すると集計されます。</span>';
-  } else {
-    el.innerHTML = Object.keys(tot).map(function(s) {
-      return '<span style="color:' + (SCOL[s]||'var(--muted)') + '">' + s + ': <strong style="color:#dde4ee">' + tot[s] + '分</strong></span>';
+function updateWeekly(){
+  var tot={},ago=new Date();ago.setDate(ago.getDate()-7);
+  logs.forEach(function(l){try{if(new Date(l.date)>=ago)tot[l.subj]=(tot[l.subj]||0)+l.min;}catch(e){}});
+  var el=document.getElementById('weeklySummary');
+  if(!Object.keys(tot).length){
+    el.innerHTML='<span style="color:var(--muted);font-size:12px;">ログタブで記録すると集計されます。</span>';
+  }else{
+    el.innerHTML=Object.keys(tot).map(function(s){
+      return '<span style="color:'+(SCOL[s]||'var(--muted)')+'">'+s+': <strong style="color:#dde4ee">'+tot[s]+'分</strong></span>';
     }).join('');
   }
 }
-addTap(document.getElementById('btnLog'), function() { addLog(); });
+addTap(document.getElementById('btnLog'),function(){ getAudioCtx(); addLog(); });
 renderLog();
 </script>
 </body>
